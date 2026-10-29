@@ -1,0 +1,86 @@
+# MiConjunto
+
+Plataforma web para la administración de un conjunto residencial: unidades y
+residentes, portería y paquetería, reservas de zonas comunes, PQRS,
+comunicados, asambleas y estado de alícuotas.
+
+**Fuera de alcance por decisión de diseño:** contabilidad, manejo de dinero,
+pasarela de pagos y facturación. El módulo de alícuotas es informativo.
+
+## Enlaces
+
+| Recurso | Ubicación |
+|---|---|
+| Producción | https://miconjunto-rose.vercel.app |
+| Repositorio | https://github.com/abotiva/miconjunto |
+| Supabase | proyecto `tebgroavefybadveomsr` |
+| Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.0.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.0.pdf) |
+
+## Stack
+
+- **Next.js 16** (App Router, Turbopack) con TypeScript.
+- **Tailwind CSS 4** para estilos.
+- **Supabase** (PostgreSQL + Auth + RLS) como base de datos.
+- **Vercel** para despliegue, con auto-deploy desde `main`.
+
+## Estructura
+
+```
+app/
+  page.tsx              redirige a /panel o /ingresar según la sesión
+  ingresar/             formulario de entrada (Server Action)
+  panel/                área privada, protegida por sesión y rol
+  estado/               diagnóstico de conexión con Supabase
+utils/supabase/
+  env.ts                lectura validada de las variables de entorno
+  server.ts             cliente para Server Components y Actions
+  client.ts             cliente para Client Components
+  proxy.ts              refresco de sesión (invocado desde proxy.ts raíz)
+proxy.ts                equivalente a middleware.ts en Next 16
+supabase/
+  migrations/           esquema SQL, se ejecuta en el SQL Editor
+  scripts/              datos iniciales
+scripts/                utilidades de conexión y despliegue
+docs/propuesta/         propuesta funcional y técnica (DOCX y PDF)
+```
+
+## Desarrollo local
+
+```powershell
+npm install
+npm run dev          # http://localhost:3000
+npm run build        # build de producción
+npm run check:supabase
+```
+
+Variables de entorno: copiar `.env.local.example` a `.env.local` y completar.
+El archivo `.env.local` está en `.gitignore` y nunca se sube.
+
+## Base de datos
+
+Las migraciones se ejecutan a mano en Supabase → SQL Editor, en orden:
+
+1. `supabase/migrations/0001_nucleo.sql` — tablas, índices y políticas RLS.
+2. `supabase/scripts/0002_primer_conjunto.sql` — conjunto inicial y administrador.
+
+Detalles en [`supabase/README.md`](supabase/README.md).
+
+## Roles
+
+| Rol | Alcance |
+|---|---|
+| `administracion` | Todo su conjunto: unidades, personas, configuración. |
+| `porteria` | Opera visitas, paquetería y novedades; lectura de unidades. |
+| `residente` | Solo su unidad, sus reservas y sus PQRS. |
+
+Todas las tablas tienen RLS activo; ningún rol anónimo ve datos.
+
+## Estado
+
+- [x] Base de datos con RLS
+- [x] Autenticación y sesión
+- [x] Panel protegido
+- [x] Despliegue en producción
+- [ ] Módulo de unidades y residentes
+- [ ] Portería y paquetería
+- [ ] Reservas, PQRS, comunicados y asambleas
