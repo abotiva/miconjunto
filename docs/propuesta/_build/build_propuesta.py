@@ -13,7 +13,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.normpath(os.path.join(BASE, "..", "assets"))
-OUT = os.path.normpath(os.path.join(BASE, "..", "Propuesta_MiConjunto_v1.1.docx"))
+OUT = os.path.normpath(os.path.join(BASE, "..", "Propuesta_MiConjunto_v1.2.docx"))
 
 NAVY = RGBColor(0x17, 0x37, 0x5E)
 NAVY_HEX = "17375E"
@@ -514,7 +514,7 @@ def setup_header_footer(section):
     r2.font.color.rgb = MUTED
     set_run_fonts(r2, BODY)
     hp.add_run("\t")
-    r3 = hp.add_run("v1.1")
+    r3 = hp.add_run("v1.2")
     r3.font.size = Pt(8)
     r3.font.color.rgb = MUTED
     set_run_fonts(r3, BODY)
@@ -623,7 +623,7 @@ def portada():
     datos = [
         ("Preparado para", "Administración del conjunto residencial"),
         ("Fecha", "29 de octubre de 2026"),
-        ("Versión", "1.1 — actualizada con la infraestructura en producción"),
+        ("Versión", "1.2 — cuotas de administración e importación desde Excel"),
         ("Contenido", "Alcance funcional, modelo de datos, arquitectura y plan de trabajo"),
     ]
     for k, v in datos:
@@ -748,7 +748,7 @@ def seccion_1():
              "Administración, residente"],
             ["Asambleas y votaciones", "Convocatoria, registro de asistencia, quórum y votación de decisiones.",
              "Administración, propietario"],
-            ["Alícuotas y pagos", "Estado informativo de pago por unidad y periodo, sin mover dinero.",
+            ["Cuotas de administración", "Cuota fijada por unidad según su coeficiente y estado de pago del periodo.",
              "Administración, residente"],
         ],
         widths=[4.5, 9.4, 3.5],
@@ -758,9 +758,9 @@ def seccion_1():
 
     callout(
         "La decisión de alcance más importante",
-        "La plataforma no mueve dinero. El módulo de alícuotas es un tablero de estado: muestra "
-        "quién está al día y quién no, según lo que la administración registre. No hay pasarela de "
-        "pagos, no hay recaudo, no hay conciliación bancaria y no se generan obligaciones contables. "
+        "La plataforma no mueve dinero. El módulo de cuotas de administración fija cuánto paga cada "
+        "unidad según su coeficiente y registra si pagó o no. No hay pasarela de pagos, no hay recaudo, "
+        "no hay conciliación bancaria y no se generan obligaciones contables. "
         "Si más adelante se quiere cobrar en línea, se integra un servicio externo y se revisa el "
         "alcance con un contador; hoy esa puerta queda cerrada a propósito.",
     )
@@ -829,7 +829,7 @@ def seccion_3():
         "Dar trazabilidad completa a las PQRS y a las órdenes de mantenimiento, con plazos visibles.",
         "Publicar comunicados y documentos con evidencia de lectura y vigencia.",
         "Facilitar la convocatoria, el quórum y la votación de asambleas con resultados verificables.",
-        "Ofrecer a la administración un tablero informativo del estado de alícuotas por unidad.",
+        "Ofrecer a la administración el control de la cuota de administración por unidad y su estado de pago.",
     ])
 
     h2("Criterios de éxito", "3.3")
@@ -882,27 +882,29 @@ def seccion_4():
         bold_first=True,
     )
 
-    h2("El caso particular del «reporte de pagos»", "4.3")
+    h2("El caso particular de las cuotas de administración", "4.3")
     para(
-        "El módulo 7 se llama Alícuotas y pagos, y conviene precisar qué significa. La plataforma "
-        "guarda el estado de cada unidad frente a la alícuota del periodo: pagado, pendiente, parcial, "
-        "en acuerdo de pago o exonerado, con fecha, medio y comprobante adjunto si la administración "
-        "lo tiene. Con eso produce un tablero y un reporte exportable."
+        "El módulo 7 fija y registra la cuota de administración de cada unidad. La administración "
+        "define el periodo y el valor que corresponde a cada unidad según su coeficiente de "
+        "copropiedad: la plataforma puede proponer el reparto —valor total por cobrar multiplicado por "
+        "el coeficiente de cada unidad— o recibir los valores ya calculados en un archivo de Excel. "
+        "Guardada la cuota, el sistema registra mes a mes si la unidad pagó: pagado, pendiente, "
+        "parcial, en acuerdo o exonerado."
     )
     para(
         "Lo que no hace es mover ese dinero ni llevar la cuenta de él. No hay botón de pago, no hay "
         "saldo contable, no hay causación, no hay intereses calculados y no hay conciliación. La "
-        "plataforma es un tablero de semáforo, no un libro de tesorería.",
+        "plataforma fija una cuota y muestra un semáforo; no es un libro de tesorería.",
         space_after=8,
     )
     table(
         ["Lo que sí hace", "Lo que no hace"],
         [
-            ["Registrar el estado de pago por unidad y periodo.", "Recibir o procesar pagos."],
-            ["Adjuntar comprobantes y observaciones.", "Emitir recibos o facturas."],
-            ["Importar un archivo con los estados del mes.", "Calcular intereses, sanciones o cuotas."],
-            ["Generar un reporte informativo en PDF o Excel.", "Producir estados financieros o balances."],
-            ["Marcar unidades en mora para gestión interna.", "Conciliar con extractos bancarios."],
+            ["Fijar la cuota de cada unidad según su coeficiente.", "Recibir o procesar pagos."],
+            ["Importar las cuotas del periodo desde Excel, con vista previa.", "Emitir recibos o facturas."],
+            ["Registrar el estado de pago con fecha y comprobante.", "Calcular intereses, sanciones o ajustes."],
+            ["Ajustar una cuota puntual dejando registro de quién y por qué.", "Conciliar con extractos bancarios."],
+            ["Generar un reporte en PDF o Excel para el consejo.", "Producir estados financieros o balances."],
         ],
         widths=[8.7, 8.7],
         font_pt=8.4,
@@ -942,7 +944,7 @@ def seccion_5():
             ["PQRS y mantenimiento", "Total", "Registrar novedad", "Radicar y seguir"],
             ["Comunicados y documentos", "Total", "Consultar", "Consultar"],
             ["Asambleas y votaciones", "Total", "—", "Asistir y votar"],
-            ["Alícuotas y pagos", "Total", "—", "Su estado"],
+            ["Cuotas de administración", "Total", "—", "Su cuota y estado"],
         ],
         widths=[5.6, 4.2, 3.6, 4.0],
         bold_first=True,
@@ -1121,24 +1123,25 @@ def seccion_6():
     )
 
     modulo(
-        7, "Alícuotas y estado de pagos",
-        "Módulo informativo. Responde a la pregunta «¿cómo va la cartera?» sin convertirse en un "
-        "sistema contable ni en una pasarela de pagos.",
+        7, "Cuotas de administración",
+        "La administración fija cuánto paga cada unidad en el periodo, según su coeficiente de "
+        "copropiedad, y el sistema guarda esa cuota junto con el estado de pago. Es control de "
+        "cartera, no contabilidad.",
         [
-            "Definición de periodos (mensual, bimestral) y del valor de alícuota por tipo de unidad, como dato de referencia.",
-            "Registro del estado por unidad y periodo: pagado, pendiente, parcial, en acuerdo, exonerado.",
-            "Carga manual o importación desde archivo con fecha de pago, medio y comprobante adjunto.",
-            "Tablero con porcentaje de recaudo informativo, unidades en mora y evolución por periodo.",
-            "Reporte exportable en PDF y Excel para llevar a la reunión de consejo.",
+            "Definición de periodos de cobro (mensuales o bimestrales) y del valor total a recaudar.",
+            "Cálculo propuesto: cuota de cada unidad = valor total × su coeficiente, con ajuste manual por unidad.",
+            "Importación desde Excel con las columnas torre, unidad, coeficiente de referencia, cuota y observación.",
+            "Vista previa de la importación con validaciones antes de aplicar los valores.",
+            "Registro del estado de pago por unidad (pagado, pendiente, parcial, en acuerdo, exonerado) y tablero de recaudo exportable.",
         ],
         [
-            "El sistema nunca calcula intereses, sanciones ni ajustes: solo registra lo que la administración informa.",
-            "Un pago marcado como «pagado» requiere fecha y medio; el comprobante es opcional pero recomendado.",
-            "Los cambios de estado quedan en auditoría con usuario, fecha y valor anterior.",
-            "El residente ve únicamente el estado de su unidad, nunca el de las demás.",
-            "Los reportes llevan la leyenda «información de referencia, no constituye estado financiero».",
+            "La cuota se fija por periodo y no se recalcula hacia atrás; un cambio genera versión nueva con auditoría.",
+            "Si la suma de cuotas no cuadra con el valor total del periodo, el sistema avisa antes de publicar y deja la diferencia registrada.",
+            "Si la cuota importada difiere del cálculo por coeficiente, se conserva la importada y la diferencia queda visible para revisión.",
+            "Una unidad sin cuota definida aparece como «pendiente de definir» y no genera estado de pago.",
+            "El residente ve su cuota y su estado, nunca los de otras unidades.",
         ],
-        "Tablero de cartera · Detalle por unidad · Carga e importación · Reporte por periodo.",
+        "Periodos · Fijar cuotas · Importar Excel · Tablero de recaudo · Detalle por unidad.",
     )
 
 
@@ -1187,7 +1190,7 @@ def seccion_8():
             ["Acuse de lectura", "Evidencia de lectura.", "Comunicado, usuario, fecha y hora."],
             ["Asamblea", "Reunión de copropietarios.", "Fecha, tipo, convocatoria, quórum, estado."],
             ["Punto y votación", "Orden del día y decisión.", "Punto, opciones, votos, coeficiente, resultado."],
-            ["Periodo / Estado de pago", "Referencia de alícuota.", "Periodo, unidad, estado, fecha, medio, comprobante."],
+            ["Periodo y cuota", "Cuota fijada por unidad.", "Periodo, unidad, cuota, estado, fecha, medio, comprobante."],
             ["Auditoría", "Trazabilidad del sistema.", "Usuario, acción, entidad, valor anterior, fecha, IP."],
         ],
         widths=[3.6, 4.8, 9.0],
@@ -1356,7 +1359,7 @@ def seccion_10():
         [
             ["Móvil primero", "El residente usará el celular; el diseño se piensa para pantalla pequeña y luego se amplía."],
             ["Tres pasos o menos", "Autorizar una visita, reservar una zona o radicar una PQRS no debe requerir más de tres decisiones."],
-            ["Lenguaje del conjunto", "«Alícuota», «torre», «portería» y «asamblea», no «tenant», «building» ni «workflow»."],
+            ["Lenguaje del conjunto", "«Cuota de administración», «torre», «portería» y «asamblea», no «tenant», «building» ni «workflow»."],
             ["Portería sin fricción", "Botones grandes, búsqueda por nombre o placa, y registro en menos de treinta segundos."],
             ["Nada se pierde", "Cada acción confirma qué quedó registrado y con qué número, para poder reclamarlo después."],
             ["Accesible", "Contraste suficiente, tamaños de texto legibles y navegación con teclado en el panel administrativo."],
@@ -1390,7 +1393,7 @@ def seccion_11():
              "3 semanas", "Portería operando en paralelo al cuaderno."],
             ["3. Servicio al residente", "PQRS, mantenimiento, comunicados, documentos y notificaciones.",
              "3 semanas", "Residentes radicando y leyendo desde la app."],
-            ["4. Participación y cartera", "Asambleas, votaciones y estado de alícuotas.",
+            ["4. Participación y cartera", "Asambleas, votaciones y cuotas de administración.",
              "2–3 semanas", "Primera asamblea con quórum calculado en el sistema."],
             ["5. Piloto y salida", "Migración de datos, capacitación, ajustes y puesta en marcha.",
              "1–2 semanas", "Conjunto operando sin el cuaderno."],
@@ -1429,7 +1432,7 @@ def seccion_12():
             ["PQRS", "Toda solicitud tiene número, responsable y plazo visible; el reporte de tiempos coincide con los cierres."],
             ["Comunicados", "El reporte de lectura identifica a cada residente que abrió el comunicado, con fecha y hora."],
             ["Asambleas", "El quórum calculado coincide con la suma de coeficientes de los asistentes y el acta se genera sin retipear."],
-            ["Alícuotas", "El tablero refleja exactamente el último archivo cargado y el reporte se exporta sin errores."],
+            ["Cuotas de administración", "La cuota de cada unidad cuadra con su coeficiente y la importación refleja exactamente el archivo cargado."],
             ["Transversal", "Un residente no puede ver datos de otra unidad ni modificando la URL ni los parámetros."],
         ],
         widths=[4.2, 13.2],
@@ -1481,8 +1484,8 @@ def seccion_14():
              "Núcleo + portería + reservas primero: es lo que más se usa y lo que más rápido muestra valor."],
             ["Quién administra el día a día", "Una persona, o un equipo con varios usuarios.",
              "Un administrador principal y un suplente con los mismos permisos."],
-            ["Nivel de detalle de alícuotas", "Solo estado, o valor por unidad y periodo.",
-             "Solo estado en la versión 1; el valor se agrega cuando el dato sea confiable."],
+            ["Quién fija la cuota", "Solo la administración, o también el consejo.",
+             "Solo la administración, con registro de quién fijó cada periodo."],
             ["Votación en asamblea", "Presencial con registro digital, o voto remoto.",
              "Presencial con registro digital primero; el voto remoto requiere reglamento y validación jurídica."],
             ["Identidad visual", "Nombre y colores del conjunto, o identidad neutra.",
@@ -1539,7 +1542,7 @@ def build():
     doc.core_properties.title = "MiConjunto — Propuesta de plataforma de administración"
     doc.core_properties.subject = "Propuesta funcional, técnica y plan de trabajo"
     doc.core_properties.author = "Equipo de proyecto"
-    doc.core_properties.comments = "Versión 1.1 para revisión"
+    doc.core_properties.comments = "Versión 1.2 para revisión"
 
     doc.save(OUT)
     print("DOCX:", OUT)

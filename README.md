@@ -2,10 +2,10 @@
 
 Plataforma web para la administración de un conjunto residencial: unidades y
 residentes, portería y paquetería, reservas de zonas comunes, PQRS,
-comunicados, asambleas y estado de alícuotas.
+comunicados, asambleas y cuotas de administración.
 
 **Fuera de alcance por decisión de diseño:** contabilidad, manejo de dinero,
-pasarela de pagos y facturación. El módulo de alícuotas es informativo.
+pasarela de pagos y facturación. El módulo de cuotas fija el valor por unidad e informa el estado de pago, sin mover dinero.
 
 ## Enlaces
 
@@ -14,7 +14,7 @@ pasarela de pagos y facturación. El módulo de alícuotas es informativo.
 | Producción | https://miconjunto-rose.vercel.app |
 | Repositorio | https://github.com/abotiva/miconjunto |
 | Supabase | proyecto `tebgroavefybadveomsr` |
-| Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.1.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.1.pdf) |
+| Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.2.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.2.pdf) |
 
 ## Stack
 

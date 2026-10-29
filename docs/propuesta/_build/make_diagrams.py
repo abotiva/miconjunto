@@ -183,7 +183,7 @@ def mapa_modulos():
         ("04", "PQRS y mantenimiento", "Radicados, responsables y plazos"),
         ("05", "Comunicados y documentos", "Circulares, actas y acuses"),
         ("06", "Asambleas y votaciones", "Convocatoria, quórum y resultados"),
-        ("07", "Alícuotas y pagos", "Estado informativo por unidad"),
+        ("07", "Cuotas de administración", "Fijación por coeficiente e importación"),
     ]
 
     w, h, gap = 21.5, 18.5, 2.6
