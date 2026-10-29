@@ -1,11 +1,13 @@
-# Archivos que no deben subirse en el despliegue
-.npm-cache
-.next
-node_modules
-docs
-supabase
-Conjunto_Residencial
-.dsh-office-*
+# Archivos que no deben subirse en el despliegue.
+# Los patrones con "/" inicial se anclan a la raíz: sin eso, "supabase"
+# también excluiría utils/supabase, que sí es código de la aplicación.
+/.npm-cache
+/.next
+/node_modules
+/docs
+/supabase
+/Conjunto_Residencial
+/.dsh-office-*
 .env
 .env.*
 !.env.local.example
