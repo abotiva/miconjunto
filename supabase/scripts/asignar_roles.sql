@@ -13,16 +13,17 @@
 do $$
 declare
   -- ▼▼▼ EDITA ESTOS DOS CORREOS ▼▼▼
-  v_email_administracion text := 'administracion@ejemplo.com';
-  v_email_admin          text := 'admin@ejemplo.com';
+  v_email_administracion text := '';
+  v_email_admin          text := '';
   -- ▲▲▲
 
   v_conjunto  uuid;
   v_afectados integer;
 begin
-  if v_email_administracion = 'administracion@ejemplo.com'
-     or v_email_admin = 'admin@ejemplo.com' then
-    raise exception 'Edita los dos correos con los reales antes de ejecutar.';
+  -- Se valida el formato, no un texto exacto: así el script sigue funcionando
+  -- aunque los correos se reemplacen en todo el archivo.
+  if position('@' in v_email_administracion) < 2 or position('@' in v_email_admin) < 2 then
+    raise exception 'Escribe los dos correos (con @) antes de ejecutar.';
   end if;
 
   if lower(v_email_administracion) = lower(v_email_admin) then

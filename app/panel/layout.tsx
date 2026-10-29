@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
 
@@ -15,7 +15,7 @@ const ETIQUETA_ROL: Record<string, string> = {
 
 const NAV = [
   { href: "/panel", label: "Panel", listo: true },
-  { href: "/panel/unidades", label: "Unidades", listo: false },
+  { href: "/panel/unidades", label: "Unidades", listo: true },
   { href: "/panel/porteria", label: "Portería", listo: false },
   { href: "/panel/reservas", label: "Reservas", listo: false },
   { href: "/panel/pqrs", label: "PQRS", listo: false },
