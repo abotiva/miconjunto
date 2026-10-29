@@ -24,15 +24,16 @@ export default async function PanelPage() {
     return (
       <section className="rounded-xl border border-amber-200 bg-amber-50 p-6">
         <h1 className="text-lg font-semibold text-amber-900">
-          Tu usuario aún no está vinculado a un conjunto
+          Tu cuenta aún no está vinculada a un conjunto
         </h1>
         <p className="mt-2 max-w-xl text-sm text-amber-800">
-          La cuenta existe y la sesión funciona, pero falta asignarle el conjunto y el
-          rol. Ejecuta el script{" "}
-          <code className="rounded bg-white/70 px-1.5 py-0.5 font-mono text-xs">
-            supabase/scripts/0002_primer_conjunto.sql
-          </code>{" "}
-          en el SQL Editor y vuelve a cargar esta página.
+          La sesión funciona ({user.email}), pero tu usuario todavía no tiene un rol
+          ni un conjunto asignado. Pídele a la Administración del conjunto que
+          habilite tu cuenta; no necesitas hacer nada más desde aquí.
+        </p>
+        <p className="mt-3 text-xs text-amber-700">
+          Si eres parte del equipo de la plataforma, revisa el rol de esta cuenta en
+          el área de Admin.
         </p>
       </section>
     );
