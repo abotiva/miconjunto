@@ -1,0 +1,12 @@
+# Archivos que no deben subirse en el despliegue
+.npm-cache
+.next
+node_modules
+docs
+supabase
+Conjunto_Residencial
+.dsh-office-*
+.env
+.env.*
+!.env.local.example
+*.md

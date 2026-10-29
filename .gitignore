@@ -1,0 +1,25 @@
+# Dependencias y build
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Entorno: nunca subir llaves
+.env
+.env.*
+!.env.local.example
+
+# Vercel y cachés locales
+.vercel/
+.npm-cache/
+.tmp-*/
+tmp/
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# Carpeta ajena de un intento anterior
+Conjunto_Residencial/
