@@ -7,9 +7,10 @@ import { salir } from "./actions";
 export const dynamic = "force-dynamic";
 
 const ETIQUETA_ROL: Record<string, string> = {
-  administracion: "Administración",
+  administracion: "Administración del conjunto",
   porteria: "Portería",
   residente: "Residente",
+  admin: "Admin",
 };
 
 const NAV = [
@@ -19,6 +20,7 @@ const NAV = [
   { href: "/panel/reservas", label: "Reservas", listo: false },
   { href: "/panel/pqrs", label: "PQRS", listo: false },
   { href: "/panel/comunicados", label: "Comunicados", listo: false },
+  { href: "/panel/auditoria", label: "Auditoría", listo: true },
 ];
 
 type Conjunto = { id: string; nombre: string; ciudad: string | null };
@@ -40,6 +42,9 @@ export default async function PanelLayout({
     .select("rol, conjunto_id, unidad_id, nombres, email")
     .eq("id", user.id)
     .maybeSingle();
+
+  // El Admin de plataforma no opera dentro del conjunto: tiene su propia área.
+  if (perfil?.rol === "admin") redirect("/admin");
 
   let conjunto: Conjunto | null = null;
 

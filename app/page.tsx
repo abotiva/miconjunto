@@ -10,5 +10,13 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  redirect(user ? "/panel" : "/ingresar");
+  if (!user) redirect("/ingresar");
+
+  const { data: perfil } = await supabase
+    .from("perfiles")
+    .select("rol")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  redirect(perfil?.rol === "admin" ? "/admin" : "/panel");
 }

@@ -7,11 +7,11 @@
 --   3. Añade las funciones que usan las políticas.
 --   4. Amplía las políticas para que el Admin lea solo con acceso activo.
 --
--- IMPORTANTE: este archivo NO va dentro de begin/commit.
--- El SQL Editor de Supabase ejecuta cada sentencia por separado, y así el
--- valor nuevo del enum puede usarse más abajo en el mismo script.
--- Si tu editor envuelve todo en una transacción, ejecuta primero la línea
--- del ALTER TYPE sola y luego el resto.
+-- IMPORTANTE: el SQL Editor de Supabase ejecuta el script dentro de una
+-- transacción. PostgreSQL no deja usar un valor nuevo del enum antes de
+-- confirmarlo, y por eso las comparaciones con el rol se hacen por texto
+-- (`rol::text = 'admin'`) en lugar de con el valor del enum. Es equivalente
+-- y permite ejecutar todo el archivo de una sola vez.
 -- =============================================================================
 
 alter type public.rol_usuario add value if not exists 'admin';
@@ -45,7 +45,7 @@ returns boolean
 language sql stable security definer set search_path = public
 as $$
   select coalesce(
-    (select rol = 'admin' from public.perfiles where id = auth.uid() and activo limit 1),
+    (select rol::text = 'admin' from public.perfiles where id = auth.uid() and activo limit 1),
     false
   );
 $$;
