@@ -13,7 +13,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.normpath(os.path.join(BASE, "..", "assets"))
-OUT = os.path.normpath(os.path.join(BASE, "..", "Propuesta_MiConjunto_v1.0.docx"))
+OUT = os.path.normpath(os.path.join(BASE, "..", "Propuesta_MiConjunto_v1.1.docx"))
 
 NAVY = RGBColor(0x17, 0x37, 0x5E)
 NAVY_HEX = "17375E"
@@ -271,7 +271,7 @@ def numbered(items, size=9.8, indent=0.55):
 
 
 def table(headers, rows, widths, header_bg=NAVY_HEX, font_pt=8.5, zebra=True,
-          bold_first=False, align_center=None, header_pt=8.2):
+          bold_first=False, align_center=None, header_pt=8.2, keep=None):
     t = doc.add_table(rows=1, cols=len(headers))
     t.alignment = WD_TABLE_ALIGNMENT.CENTER
     t.autofit = False
@@ -315,6 +315,16 @@ def table(headers, rows, widths, header_bg=NAVY_HEX, font_pt=8.5, zebra=True,
             set_run_fonts(r, BODY)
 
     keep_together(t)
+    # Las tablas cortas no se parten; las largas sí, con el encabezado repetido.
+    if keep is None:
+        keep = len(rows) <= 6
+    if keep:
+        # Mantiene la tabla en una sola página: cada fila "pide" que la
+        # siguiente la acompañe, salvo la última.
+        for row in t.rows[:-1]:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    paragraph.paragraph_format.keep_with_next = True
     return t
 
 
@@ -504,7 +514,7 @@ def setup_header_footer(section):
     r2.font.color.rgb = MUTED
     set_run_fonts(r2, BODY)
     hp.add_run("\t")
-    r3 = hp.add_run("v1.0")
+    r3 = hp.add_run("v1.1")
     r3.font.size = Pt(8)
     r3.font.color.rgb = MUTED
     set_run_fonts(r3, BODY)
@@ -613,7 +623,7 @@ def portada():
     datos = [
         ("Preparado para", "Administración del conjunto residencial"),
         ("Fecha", "29 de octubre de 2026"),
-        ("Versión", "1.0 — propuesta para revisión y aprobación"),
+        ("Versión", "1.1 — actualizada con la infraestructura en producción"),
         ("Contenido", "Alcance funcional, modelo de datos, arquitectura y plan de trabajo"),
     ]
     for k, v in datos:
@@ -1165,7 +1175,7 @@ def seccion_8():
             ["Persona", "Propietario, residente o autorizado.", "Nombre, documento, correo, teléfono, consentimiento."],
             ["Vinculación", "Relación persona–unidad.", "Rol, fecha inicio, fecha fin, es representante."],
             ["Vehículo / Mascota", "Bienes asociados a la unidad.", "Placa, tipo, marca; nombre, especie, raza."],
-            ["Usuario", "Acceso a la aplicación.", "Correo, hash de contraseña, rol, estado, último ingreso."],
+            ["Perfil", "Cuenta de Supabase Auth ligada al conjunto.", "Correo, rol, conjunto, unidad y estado."],
             ["Autorización", "Permiso de visita.", "Visitante, documento, placa, vigencia, código."],
             ["Visita", "Registro de entrada y salida.", "Unidad, autorización, entrada, salida, funcionario."],
             ["Paquete", "Encomienda recibida.", "Transportadora, destinatario, recepción, entrega, firma."],
@@ -1195,23 +1205,31 @@ def seccion_8():
 def seccion_9():
     h1("9", "Arquitectura y tecnología")
     para(
-        "La elección técnica responde a un criterio práctico: que el sistema se pueda ejecutar hoy en "
-        "un computador del conjunto, sin infraestructura, y que mañana pueda pasar a internet sin "
-        "reescribirlo."
+        "La infraestructura ya está construida y en producción: Supabase para datos y autenticación, "
+        "Vercel para la aplicación, GitHub para el código. Esta sección describe cómo quedó y por qué, "
+        "no un diseño hipotético."
+    )
+
+    callout(
+        "Estado a la fecha de esta versión",
+        "Base de datos con ocho tablas y diecisiete políticas de aislamiento, autenticación funcionando, "
+        "panel protegido por rol y despliegue automático desde la rama principal. La propuesta describe "
+        "el sistema que ya opera, con los módulos restantes por construir.",
     )
 
     h2("Pila tecnológica", "9.1")
     table(
         ["Capa", "Tecnología", "Por qué"],
         [
-            ["Interfaz", "Next.js (React) con App Router", "Un solo proyecto para pantallas y servidor; carga rápida y buen comportamiento en celular."],
-            ["Estilos", "Tailwind CSS", "Diseño consistente y adaptable sin hojas de estilo interminables."],
+            ["Interfaz", "Next.js 16 (App Router, React 19)", "Un solo proyecto para pantallas y servidor; carga rápida y buen comportamiento en celular."],
+            ["Estilos", "Tailwind CSS 4", "Diseño consistente y adaptable sin hojas de estilo interminables."],
             ["Lógica", "Server Actions y validación en servidor", "Las reglas viven donde nadie puede alterarlas desde el navegador."],
-            ["Datos", "SQLite con Drizzle ORM", "Un archivo de base de datos, cero administración, fácil de respaldar."],
-            ["Archivos", "Almacenamiento local con ruta configurable", "Adjuntos y fotos fuera del repositorio, con respaldo propio."],
-            ["Autenticación", "Sesiones propias con cookie httpOnly y hash scrypt", "Sin dependencias externas ni costos por usuario."],
+            ["Base de datos", "Supabase · PostgreSQL", "Multiusuario real, acceso desde cualquier lugar y respaldo administrado."],
+            ["Aislamiento", "Row Level Security (RLS)", "Cada consulta se filtra en la base por conjunto y por unidad, no en la interfaz."],
+            ["Autenticación", "Supabase Auth", "Inicio de sesión, recuperación de contraseña y sesión por cookies httpOnly."],
+            ["Archivos", "Supabase Storage", "Documentos, fotos y comprobantes fuera del código, con control de acceso."],
+            ["Despliegue", "Vercel", "Publicación automática desde GitHub, HTTPS y entorno de vista previa por rama."],
             ["Correo", "SMTP configurable", "Avisos de visitas, paquetes y comunicados."],
-            ["Reportes", "Generación de PDF y Excel en el servidor", "Lo que la administración lleva a la reunión de consejo."],
         ],
         widths=[3.0, 5.6, 8.8],
         font_pt=8.2,
@@ -1220,24 +1238,24 @@ def seccion_9():
     spacer(8)
 
     callout(
-        "Por qué una base de datos local y no un servicio en la nube",
-        "Un conjunto de 200 a 500 unidades genera del orden de 100.000 registros al año, muy por "
-        "debajo de lo que SQLite maneja sin esfuerzo. La ganancia es operativa: un solo archivo que se "
-        "copia, se respalda y se audita, sin depender de un proveedor ni de una conexión permanente. "
-        "Si el conjunto crece o se administran varios, la migración a un motor en la nube no cambia "
-        "el modelo de datos ni las pantallas.",
+        "Por qué una base de datos administrada y no un archivo local",
+        "Un conjunto de 200 a 500 unidades genera del orden de 100.000 registros al año, un volumen "
+        "que PostgreSQL maneja sin esfuerzo. La diferencia frente a un archivo local no es la capacidad "
+        "sino la operación: acceso desde el celular del residente, respaldos administrados, aislamiento "
+        "por fila y ninguna copia que se pueda perder con el computador de la portería.",
     )
 
     h2("Requisitos mínimos de operación", "9.2")
     table(
         ["Componente", "Mínimo recomendado"],
         [
-            ["Equipo donde corre el sistema", "Computador de escritorio o mini PC, 4 GB de memoria y 20 GB libres en disco."],
+            ["Navegador", "Chrome, Edge, Safari o Firefox en versión reciente; no hay nada que instalar en los equipos."],
             ["Conexión a internet", "Banda ancha estable en administración y portería; 5 Mbps son suficientes para todo el conjunto."],
-            ["Navegador", "Chrome, Edge, Safari o Firefox en versión reciente; sin instalación adicional."],
-            ["Respaldo", "Disco externo o carpeta sincronizada en la nube, con copia diaria automática."],
+            ["Cuentas", "Un proyecto de Supabase y uno de Vercel; el plan gratuito alcanza para operar y probar."],
+            ["Dominio", "Opcional; se puede usar el subdominio gratuito de Vercel mientras se decide."],
+            ["Correo saliente", "Opcional en la primera fase; se configura cuando se activen las notificaciones."],
         ],
-        widths=[5.4, 12.0],
+        widths=[4.6, 12.8],
         font_pt=8.4,
         bold_first=True,
     )
@@ -1245,67 +1263,85 @@ def seccion_9():
 
     h2("Cómo se organiza el sistema", "9.3")
     picture("arquitectura.png", 16.8)
-    caption("Figura 2. Arquitectura en capas: usuarios, aplicación, datos y servicios de apoyo.")
+    caption("Figura 2. Arquitectura en capas: usuarios, aplicación en Vercel, datos en Supabase y servicios de apoyo.")
 
     para(
-        "La aplicación es un único servicio: no hay que instalar un servidor de base de datos, ni "
-        "configurar caché, ni administrar contenedores. Eso reduce el costo de operación a casi cero "
-        "y permite que el conjunto lo mantenga sin un ingeniero de planta.", space_before=8,
+        "La aplicación no guarda datos propios: cada petición se autentica y consulta Supabase, que "
+        "aplica las políticas de aislamiento antes de devolver una sola fila. Por eso la seguridad no "
+        "depende de que la interfaz oculte botones ni de que el residente escriba una dirección distinta.",
+        space_before=8,
+    )
+    para(
+        "Tampoco hay un servidor que administrar: no se actualiza un sistema operativo, ni un motor de "
+        "base de datos, ni un certificado. El conjunto se concentra en operar, no en mantener infraestructura."
     )
 
     h2("Estructura del proyecto", "9.4")
     code_block([
         "app/",
-        "  (auth)/ingresar/          inicio de sesión",
-        "  (panel)/                  área privada con menú por rol",
-        "    inicio/                 panel de indicadores",
-        "    unidades/               fichas de unidad y persona",
-        "    porteria/               visitas, autorizaciones y bitácora",
-        "    paqueteria/             recepción y entrega",
-        "    reservas/               calendario de zonas comunes",
-        "    pqrs/                   bandeja y detalle",
-        "    comunicados/            publicación y lectura",
-        "    asambleas/              convocatoria, quórum y votación",
-        "    alicuotas/              estado de pagos (informativo)",
-        "    ajustes/                conjunto, zonas, reglas y usuarios",
-        "  api/                      webhooks y exportaciones",
-        "lib/",
-        "  db/                       esquema, migraciones y consultas",
-        "  auth/                     sesión y control de permisos",
-        "  reglas/                   reservas, visitas, plazos de PQRS",
-        "  reportes/                 generación de PDF y Excel",
-        "data/                       base de datos y adjuntos (fuera de control de versiones)",
+        "  page.tsx                  redirige según la sesión",
+        "  ingresar/                 inicio de sesión (Server Action)",
+        "  panel/                    área privada: layout, panel y acciones",
+        "  estado/                   diagnóstico de conexión",
+        "utils/supabase/",
+        "  env.ts                    lectura validada de variables",
+        "  server.ts                 cliente para servidor",
+        "  client.ts                 cliente para navegador",
+        "  proxy.ts                  refresco de sesión",
+        "proxy.ts                    equivalente a middleware en Next 16",
+        "supabase/",
+        "  migrations/0001_nucleo.sql        tablas, índices y políticas RLS",
+        "  scripts/0002_primer_conjunto.sql  conjunto inicial y administrador",
+        "scripts/",
+        "  check-supabase.mjs        verificación de conexión",
+        "  vercel-deploy.mjs         despliegue por API",
+        "docs/propuesta/             este documento",
     ])
 
     h2("Seguridad y privacidad", "9.5")
-    bullet("contraseñas con hash scrypt y sal única; nunca se almacenan en texto plano;", size=9.3)
-    bullet("sesión en cookie httpOnly, Secure y SameSite; cierre por inactividad configurable;", size=9.3)
-    bullet("autorización por rol y por alcance (un residente solo ve su unidad) validada en el servidor;", size=9.3)
-    bullet("registro de auditoría de las acciones sensibles: quién, qué, cuándo y desde dónde;", size=9.3)
-    bullet("HTTPS obligatorio cuando el sistema esté publicado en internet;", size=9.3)
+    bullet("RLS activo en las ocho tablas del núcleo, con diecisiete políticas de acceso por rol y por unidad;", size=9.3)
+    bullet("el rol vive en la base de datos, no en la interfaz: manipular la pantalla no amplía permisos;", size=9.3)
+    bullet("la clave publicable puede viajar al navegador; la clave secreta y la cadena de conexión nunca salen del servidor;", size=9.3)
+    bullet("sesión en cookie httpOnly, con refresco en cada petición y cierre al cerrar sesión;", size=9.3)
+    bullet("HTTPS obligatorio, con certificado administrado por Vercel;", size=9.3)
     bullet("datos personales tratados conforme a la Ley 1581 de 2012: finalidad, consentimiento y derechos del titular;", size=9.3)
-    bullet("respaldo cifrado diario y prueba de restauración mensual documentada.", size=9.3)
+    bullet("respaldos administrados por Supabase, con exportación periódica a un destino propio.", size=9.3)
 
-    h2("Dónde puede vivir el sistema", "9.6")
+    h2("Entornos de trabajo", "9.6")
     table(
-        ["Escenario", "Cómo funciona", "Cuándo conviene"],
+        ["Entorno", "Dónde vive", "Para qué sirve"],
         [
-            ["Un computador en la administración", "El sistema corre en el equipo y se accede desde la red local del conjunto.",
-             "Para arrancar sin costo de hosting y probar con el equipo real."],
-            ["Servidor pequeño en internet", "Un servidor virtual con dominio y certificado HTTPS; acceso desde cualquier lugar.",
-             "Cuando portería y residentes necesitan entrar desde fuera del conjunto."],
-            ["Nube administrada", "Infraestructura con respaldo y monitoreo del proveedor.",
-             "Conjuntos grandes o varios conjuntos bajo una misma administración."],
+            ["Local", "Tu computador, con el proyecto y Supabase real", "Desarrollo y pruebas antes de publicar."],
+            ["Vista previa", "Una URL de Vercel por rama o por pull request", "Revisar un cambio sin afectar a los residentes."],
+            ["Producción", "miconjunto-rose.vercel.app", "Uso real del conjunto; se actualiza al integrar en la rama principal."],
         ],
-        widths=[4.2, 7.4, 5.8],
+        widths=[3.4, 6.6, 7.4],
         font_pt=8.3,
         bold_first=True,
     )
-    spacer(4)
+    spacer(10)
+
+    h2("Operación y costos", "9.7")
+    table(
+        ["Servicio", "Plan para arrancar", "Cuándo conviene subir"],
+        [
+            ["Supabase", "Gratuito: 500 MB de base, autenticación y respaldos. Se pausa tras siete días sin uso.",
+             "Plan Pro (unos 25 USD/mes) cuando el uso sea diario y la pausa deje de ser aceptable."],
+            ["Vercel", "Hobby: suficiente para operar y probar, pero reservado a uso personal no comercial.",
+             "Plan Pro (unos 20 USD/mes) cuando el conjunto lo use como sistema oficial."],
+            ["Dominio", "Opcional: se arranca con el subdominio de Vercel.",
+             "Unos 12 USD al año si se quiere una dirección propia, por ejemplo miconjunto.co."],
+        ],
+        widths=[3.2, 7.4, 6.8],
+        font_pt=8.3,
+        bold_first=True,
+    )
+    spacer(6)
     para(
-        "La recomendación es empezar en el primer escenario, migrar al segundo cuando el uso se "
-        "estabilice y solo considerar el tercero si se administran varios conjuntos.",
-        size=9, color=MUTED,
+        "Con esto, el costo de operación arranca en cero y no debería superar los 45 USD mensuales "
+        "cuando el conjunto lo adopte como sistema oficial. El respaldo de la base de datos no es un "
+        "costo aparte: viene incluido en el servicio.",
+        size=9.2,
     )
 
 
@@ -1365,7 +1401,7 @@ def seccion_11():
     )
     spacer(6)
     para(
-        "Duración total estimada: entre diez y trece semanas. No es un cronograma rígido: las fases 2 "
+        "Duración total estimada: entre diez y trece semanas. La fase 0 y la infraestructura de la fase 1 ya están hechas —base de datos, autenticación, panel y despliegue—, así que el trabajo pendiente ronda las ocho a diez semanas. No es un cronograma rígido: las fases 2 "
         "y 3 pueden solaparse si la validación es ágil, y la fase 4 puede posponerse sin afectar la "
         "operación diaria.",
         size=9.2,
@@ -1384,7 +1420,6 @@ def seccion_12():
         "Un módulo se considera terminado cuando cumple estos criterios en una prueba con datos "
         "reales. No son aspiraciones: son condiciones verificables."
     )
-    doc.add_page_break()
     table(
         ["Módulo", "Se acepta cuando…"],
         [
@@ -1435,16 +1470,15 @@ def seccion_13():
 def seccion_14():
     h1("14", "Decisiones pendientes y próximos pasos")
     para(
-        "Para convertir esta propuesta en un plan ejecutable necesito que definas lo siguiente. Ninguna "
-        "de estas decisiones bloquea el arranque, pero sí cambia el orden y el detalle del trabajo."
+        "Cuatro decisiones ya están tomadas y no se discuten en esta versión: la plataforma corre en "
+        "Supabase y Vercel, el aislamiento se aplica con RLS en la base, el modelo admite varios "
+        "conjuntos y el manejo de dinero queda fuera. Lo que sigue es lo que todavía necesito de ti."
     )
     table(
         ["Decisión", "Opciones", "Mi recomendación"],
         [
-            ["Alcance de la versión 1", "Todo lo propuesto, o solo núcleo + portería primero.",
+            ["Alcance de la versión 1", "Todo lo propuesto, o núcleo + portería primero.",
              "Núcleo + portería + reservas primero: es lo que más se usa y lo que más rápido muestra valor."],
-            ["Dónde vivirá el sistema", "Computador local, servidor en internet o nube.",
-             "Computador local durante el piloto; servidor pequeño al salir a producción."],
             ["Quién administra el día a día", "Una persona, o un equipo con varios usuarios.",
              "Un administrador principal y un suplente con los mismos permisos."],
             ["Nivel de detalle de alícuotas", "Solo estado, o valor por unidad y periodo.",
@@ -1462,12 +1496,12 @@ def seccion_14():
 
     h2("Próximos pasos", "14.1")
     numbered([
-        "Revisar este documento y marcar qué se ajusta, qué se elimina y qué falta.",
-        "Confirmar el nombre del proyecto y un conjunto piloto para las pruebas.",
+        "Revisar esta versión y marcar qué se ajusta, qué se elimina y qué falta.",
         "Definir las reglas concretas: zonas comunes, cupos, horarios, plazos de PQRS y quórum.",
-        "Entregar los datos disponibles: listado de unidades, residentes y zonas comunes.",
-        "Aprobar la fase 0 y agendar una sesión de dos horas para cerrar reglas.",
-        "Iniciar el desarrollo del núcleo con la estructura del proyecto ya creada.",
+        "Entregar los datos del conjunto: listado de unidades con coeficientes y reglamento.",
+        "Cargar las unidades y las personas del conjunto piloto.",
+        "Construir el módulo de unidades y residentes sobre el esquema que ya existe.",
+        "Abrir el uso a la administración y a la portería, y después a los residentes.",
     ])
 
     spacer(12)
@@ -1505,7 +1539,7 @@ def build():
     doc.core_properties.title = "MiConjunto — Propuesta de plataforma de administración"
     doc.core_properties.subject = "Propuesta funcional, técnica y plan de trabajo"
     doc.core_properties.author = "Equipo de proyecto"
-    doc.core_properties.comments = "Versión 1.0 para revisión"
+    doc.core_properties.comments = "Versión 1.1 para revisión"
 
     doc.save(OUT)
     print("DOCX:", OUT)

@@ -1,4 +1,4 @@
-# MiConjunto
+﻿# MiConjunto
 
 Plataforma web para la administración de un conjunto residencial: unidades y
 residentes, portería y paquetería, reservas de zonas comunes, PQRS,
@@ -14,7 +14,7 @@ pasarela de pagos y facturación. El módulo de alícuotas es informativo.
 | Producción | https://miconjunto-rose.vercel.app |
 | Repositorio | https://github.com/abotiva/miconjunto |
 | Supabase | proyecto `tebgroavefybadveomsr` |
-| Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.0.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.0.pdf) |
+| Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.1.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.1.pdf) |
 
 ## Stack
 

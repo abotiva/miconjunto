@@ -125,18 +125,18 @@ def arquitectura():
             ("Puesto de portería", "Tablet o computador"),
             ("Panel de administración", "Computador de oficina"),
         ]),
-        (52.5, 17.5, "APLICACIÓN", TEAL, TINT2, [
-            ("Interfaz", "App Router, componentes accesibles"),
-            ("Lógica de negocio", "Server Actions y validaciones"),
-            ("Sesión y permisos", "Cookie segura, roles y alcance"),
+        (52.5, 17.5, "VERCEL", TEAL, TINT2, [
+            ("Next.js 16", "App Router y Server Actions"),
+            ("Proxy de sesión", "Cookies httpOnly y refresco"),
+            ("Dominio y HTTPS", "Certificado automático"),
         ]),
-        (29.0, 17.5, "DATOS", AMBER, TINT3, [
-            ("Base de datos", "SQLite: una copia por conjunto"),
-            ("Archivos y adjuntos", "Documentos, fotos y comprobantes"),
-            ("Respaldos", "Copia diaria automática"),
+        (29.0, 17.5, "SUPABASE", AMBER, TINT3, [
+            ("PostgreSQL + RLS", "Aislamiento por unidad"),
+            ("Auth", "Correo y contraseña"),
+            ("Storage", "Documentos y adjuntos"),
         ]),
         (5.5, 17.5, "SERVICIOS", NAVY_SOFT, TINT, [
-            ("Notificaciones", "Correo y avisos en la app"),
+            ("Correo SMTP", "Avisos y recordatorios"),
             ("Exportaciones", "PDF y Excel de reportes"),
             ("Auditoría", "Registro de quién cambió qué"),
         ]),
@@ -161,7 +161,7 @@ def arquitectura():
     b.arrow(cx + 0.1, 29.0, cx, 23.4, color="#93A6B8", both=True)
 
     b.text(59.2, 73.2, "HTTPS", pt=6.6, color=MUTED, anchor="lm")
-    b.text(59.2, 49.6, "consultas", pt=6.6, color=MUTED, anchor="lm")
+    b.text(59.2, 49.6, "JWT + RLS", pt=6.6, color=MUTED, anchor="lm")
     b.text(59.2, 26.1, "tareas", pt=6.6, color=MUTED, anchor="lm")
 
     return b.save("arquitectura.png")
