@@ -23,3 +23,6 @@ Thumbs.db
 
 # Carpeta ajena de un intento anterior
 Conjunto_Residencial/
+
+# Artefactos de vista previa de documentos
+.dsh-office-*/
