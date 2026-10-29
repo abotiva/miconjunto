@@ -14,7 +14,7 @@ pasarela de pagos y facturación. El módulo de cuotas fija el valor por unidad 
 | Producción | https://miconjunto-rose.vercel.app |
 | Repositorio | https://github.com/abotiva/miconjunto |
 | Supabase | proyecto `tebgroavefybadveomsr` |
-| Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.2.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.2.pdf) |
+| Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.3.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.3.pdf) |
 
 ## Stack
 

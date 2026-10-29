@@ -13,7 +13,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.normpath(os.path.join(BASE, "..", "assets"))
-OUT = os.path.normpath(os.path.join(BASE, "..", "Propuesta_MiConjunto_v1.2.docx"))
+OUT = os.path.normpath(os.path.join(BASE, "..", "Propuesta_MiConjunto_v1.3.docx"))
 
 NAVY = RGBColor(0x17, 0x37, 0x5E)
 NAVY_HEX = "17375E"
@@ -514,7 +514,7 @@ def setup_header_footer(section):
     r2.font.color.rgb = MUTED
     set_run_fonts(r2, BODY)
     hp.add_run("\t")
-    r3 = hp.add_run("v1.2")
+    r3 = hp.add_run("v1.3")
     r3.font.size = Pt(8)
     r3.font.color.rgb = MUTED
     set_run_fonts(r3, BODY)
@@ -623,7 +623,7 @@ def portada():
     datos = [
         ("Preparado para", "Administración del conjunto residencial"),
         ("Fecha", "29 de octubre de 2026"),
-        ("Versión", "1.2 — cuotas de administración e importación desde Excel"),
+        ("Versión", "1.3 — distinción entre Administración del conjunto y Admin"),
         ("Contenido", "Alcance funcional, modelo de datos, arquitectura y plan de trabajo"),
     ]
     for k, v in datos:
@@ -914,22 +914,33 @@ def seccion_4():
 def seccion_5():
     h1("5", "Usuarios y permisos")
     para(
-        "La aplicación tiene tres experiencias sobre el mismo sistema. No son tres aplicaciones "
+        "La aplicación tiene cuatro experiencias sobre el mismo sistema. No son cuatro aplicaciones "
         "distintas: es la misma información vista con permisos diferentes, para que nadie tenga que "
         "aprender dos herramientas."
+    )
+
+    callout(
+        "Dos «administraciones» que conviene no confundir",
+        "La Administración del conjunto es quien gobierna el edificio: fija cuotas, atiende PQRS y "
+        "convoca asambleas. El Admin es quien opera MiConjunto como plataforma: crea conjuntos, "
+        "habilita la primera cuenta y da soporte. Son roles distintos, con permisos distintos, y la "
+        "interfaz los nombra distinto a propósito. La configuración interna de un conjunto se llama "
+        "«Ajustes», no «administración».",
     )
 
     table(
         ["Rol", "Quién es", "Qué necesita resolver"],
         [
-            ["Administración", "Administrador del conjunto o su equipo.",
-             "Configurar el conjunto, mantener la información, atender solicitudes, publicar, convocar y reportar."],
+            ["Administración del conjunto", "Administrador del conjunto o su equipo.",
+             "Configurar el conjunto, mantener la información, atender solicitudes, fijar cuotas, publicar, convocar y reportar."],
             ["Portería", "Vigilante o auxiliar de portería, en turnos.",
              "Registrar visitas y paquetes con rapidez, consultar autorizaciones y dejar constancia de novedades."],
             ["Residente", "Propietario, arrendatario o familiar autorizado.",
              "Ver su unidad, autorizar visitas, reservar zonas, radicar PQRS, leer comunicados y votar."],
+            ["Admin", "Equipo que opera la plataforma MiConjunto.",
+             "Crear conjuntos, habilitar cuentas y dar soporte con acceso temporal y registrado."],
         ],
-        widths=[3.4, 4.6, 9.4],
+        widths=[3.9, 4.6, 8.9],
         bold_first=True,
     )
     spacer(8)
@@ -958,6 +969,31 @@ def seccion_5():
         size=9, color=MUTED, space_after=6,
     )
 
+    h2("El rol Admin y el acceso de soporte", "5.2")
+    para(
+        "El Admin no pertenece a ningún conjunto y por eso no aparece en la matriz anterior: no opera "
+        "dentro del edificio. Su trabajo es crear conjuntos, habilitar la primera cuenta de "
+        "Administración y acompañar cuando algo falla."
+    )
+    para(
+        "Para eso existe el acceso de soporte: una autorización temporal, con motivo escrito y hora "
+        "de caducidad, que le permite leer los datos de un conjunto concreto. Mientras está activo, "
+        "cada consulta queda registrada; cuando vence, se cierra solo. La Administración del conjunto "
+        "puede ver quién entró y por qué.",
+        space_after=8,
+    )
+    table(
+        ["El Admin puede", "El Admin no puede"],
+        [
+            ["Crear conjuntos y habilitar la primera cuenta.", "Ver datos de un conjunto sin acceso de soporte activo."],
+            ["Ver la lista de conjuntos y su estado general.", "Modificar cuotas, PQRS, reservas ni personas."],
+            ["Abrir un acceso de soporte con motivo y caducidad.", "Abrir un acceso sin dejar registro en auditoría."],
+            ["Consultar la auditoría de accesos.", "Borrar registros de auditoría."],
+        ],
+        widths=[8.7, 8.7],
+        font_pt=8.3,
+    )
+    spacer(10)
     callout(
         "Sobre las cuentas de residente",
         "No todos los residentes usarán la aplicación, y está bien. El sistema debe funcionar aunque "
@@ -1179,6 +1215,7 @@ def seccion_8():
             ["Vinculación", "Relación persona–unidad.", "Rol, fecha inicio, fecha fin, es representante."],
             ["Vehículo / Mascota", "Bienes asociados a la unidad.", "Placa, tipo, marca; nombre, especie, raza."],
             ["Perfil", "Cuenta de Supabase Auth ligada al conjunto.", "Correo, rol, conjunto, unidad y estado."],
+            ["Acceso de soporte", "Permiso temporal del Admin.", "Admin, conjunto, motivo, desde, hasta, revocado."],
             ["Autorización", "Permiso de visita.", "Visitante, documento, placa, vigencia, código."],
             ["Visita", "Registro de entrada y salida.", "Unidad, autorización, entrada, salida, funcionario."],
             ["Paquete", "Encomienda recibida.", "Transportadora, destinatario, recepción, entrega, firma."],
@@ -1359,7 +1396,7 @@ def seccion_10():
         [
             ["Móvil primero", "El residente usará el celular; el diseño se piensa para pantalla pequeña y luego se amplía."],
             ["Tres pasos o menos", "Autorizar una visita, reservar una zona o radicar una PQRS no debe requerir más de tres decisiones."],
-            ["Lenguaje del conjunto", "«Cuota de administración», «torre», «portería» y «asamblea», no «tenant», «building» ni «workflow»."],
+            ["Lenguaje del conjunto", "«Administración del conjunto» y «Admin», «cuota de administración», «torre» y «portería»; nunca «tenant», «root» ni «workflow»."],
             ["Portería sin fricción", "Botones grandes, búsqueda por nombre o placa, y registro en menos de treinta segundos."],
             ["Nada se pierde", "Cada acción confirma qué quedó registrado y con qué número, para poder reclamarlo después."],
             ["Accesible", "Contraste suficiente, tamaños de texto legibles y navegación con teclado en el panel administrativo."],
@@ -1542,7 +1579,7 @@ def build():
     doc.core_properties.title = "MiConjunto — Propuesta de plataforma de administración"
     doc.core_properties.subject = "Propuesta funcional, técnica y plan de trabajo"
     doc.core_properties.author = "Equipo de proyecto"
-    doc.core_properties.comments = "Versión 1.2 para revisión"
+    doc.core_properties.comments = "Versión 1.3 para revisión"
 
     doc.save(OUT)
     print("DOCX:", OUT)
