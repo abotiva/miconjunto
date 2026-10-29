@@ -13,6 +13,18 @@ Registro de hitos para seguimiento y versionamiento.
   **no** se etiqueta cada commit.
 - Mientras el proyecto no tenga usuarios reales, la numeración se queda en `0.x`.
 
+### Versiones publicadas
+
+| Versión | Fecha | Hito | Commit |
+|---|---|---|---|
+| `v0.4` | 2026-10-29 | Operación: Admin, auditoría y unidades | `6494898` |
+| `v0.3` | 2026-10-29 | Cuotas de administración y rol Admin | `abb37ec` |
+| `v0.2` | 2026-10-29 | A producción: GitHub y Vercel | `b89c11f` |
+| `v0.1` | 2026-10-29 | Fundación: app, base de datos y propuesta | `e576c49` |
+
+Las etiquetas están publicadas en el repositorio. `git show v0.3` muestra el
+resumen del hito sin salir de la terminal.
+
 ---
 
 ## v0.4 · 2026-10-29 — Operación
