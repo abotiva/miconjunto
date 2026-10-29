@@ -1,70 +1,109 @@
 # Bitácora de MiConjunto
 
-Registro de hitos del proyecto para seguimiento y versionamiento.
+Registro de hitos para seguimiento y versionamiento.
 
 > **Regla de uso:** este archivo se actualiza **solo cuando el usuario lo solicita**.
 > No se modifica automáticamente en cada cambio. El detalle fino vive en el
 > historial de git; aquí van los resúmenes que sirven para revisar avance.
 
+## Cómo se versiona
+
+- Cada hito se marca con una **etiqueta de git** (`v0.1`, `v0.2`, …) y su fecha.
+- Una versión agrupa un conjunto de cambios que tiene sentido revisar junto;
+  **no** se etiqueta cada commit.
+- Mientras el proyecto no tenga usuarios reales, la numeración se queda en `0.x`.
+
 ---
 
-## 2026-10-29 · Día 1 — De la propuesta a producción
+## v0.4 · 2026-10-29 — Operación
 
-### Propuesta y alcance
+**Entregado**
 
-- Documento de propuesta completo (17 páginas): problema, objetivos, 7 módulos con
-  reglas de negocio, roles, modelo de datos, arquitectura y plan por fases.
-- Alcance delimitado: **sin contabilidad ni manejo de dinero**. El «reporte de pagos»
-  quedó como estado de cuotas, sin pasarela, recaudo, intereses ni conciliación.
-- Corrección de terminología: se eliminó «alícuota» como nombre de módulo. Se usa
-  **cuota de administración** (valor mensual por unidad) y **coeficiente de
-  copropiedad** (porcentaje de participación).
-- Distinción entre **Administración del conjunto** (gobierna el edificio) y **Admin**
-  (opera la plataforma), con acceso de soporte temporal, motivado y auditado.
-- Tres revisiones del documento: v1.0 (original), v1.1 (infraestructura real),
-  v1.2 (cuotas e importación), v1.3 (Administración vs Admin). Todas con DOCX y PDF.
-
-### Infraestructura
-
-- **Supabase**: proyecto creado, 8 tablas del núcleo, tabla de accesos de soporte,
-  RLS activo con más de 17 políticas, autenticación por correo y contraseña.
-- **Vercel**: proyecto desplegado en `miconjunto-rose.vercel.app`, variables de
-  entorno en los tres ambientes y despliegue automático desde `main`.
-- **GitHub**: repositorio privado `abotiva/miconjunto`, conectado a Vercel.
-- **Aplicación**: Next.js 16 (App Router), TypeScript y Tailwind 4.
-
-### Funcionalidad construida
-
-- Inicio de sesión con Supabase Auth y sesión por cookies.
-- Enrutamiento por rol: Admin → `/admin`; Administración → `/panel`.
-- **Unidades y torres**: listado con coeficiente acumulado, alta de unidades con
+- Área de Admin: lista de conjuntos, apertura de accesos de soporte con motivo y
+  caducidad de 1 a 24 horas, cierre anticipado e historial de accesos.
+- Auditoría para la Administración del conjunto: quién accedió, cuándo, por qué y
+  hasta cuándo, con estado del acceso.
+- Módulo de unidades: listado con coeficiente acumulado, alta de unidades con
   validaciones y alta de torres.
-- **Área de Admin**: lista de conjuntos, apertura de accesos de soporte con motivo y
-  caducidad (1 a 24 h), cierre anticipado e historial.
-- **Auditoría** para la Administración del conjunto: quién accedió, cuándo, por qué y
-  hasta cuándo.
-- Página de diagnóstico de conexión con Supabase.
+- Enrutamiento por rol: Admin al área de plataforma, Administración al panel del
+  conjunto.
+- Esta bitácora.
 
-### Decisiones tomadas
+**Decisiones**
 
-- Modelo preparado para varios conjuntos (`conjunto_id` en todas las tablas).
+- El acceso de soporte es de solo lectura y caduca solo; el Admin no modifica datos
+  del conjunto.
+- Cada conjunto puede tener varias torres o ninguna.
+
+---
+
+## v0.3 · 2026-10-29 — Reglas del dinero y de los roles
+
+**Entregado**
+
+- Se retiró «alícuota» como nombre de módulo: ahora es **cuota de administración**,
+  fijada por unidad según su coeficiente, con importación desde Excel y vista previa.
+- Separación entre **Administración del conjunto** y **Admin** de la plataforma,
+  con acceso de soporte temporal, motivado y auditado.
+- Migración de base de datos con el rol `admin`, la tabla de accesos y las políticas
+  ampliadas.
+- Propuesta v1.2 (cuotas) y v1.3 (roles).
+
+**Decisiones**
+
+- La cuota se fija por periodo y no se recalcula hacia atrás.
+- Si la suma de cuotas no cuadra con el valor total, el sistema avisa y deja la
+  diferencia registrada; no bloquea.
+
+---
+
+## v0.2 · 2026-10-29 — A producción
+
+**Entregado**
+
+- Repositorio privado en GitHub y despliegue en Vercel con dominio propio.
+- Despliegue automático en cada push a `main`.
+- Corrección del empaquetado que rompía el build en Vercel (patrones de exclusión
+  sin anclar a la raíz).
+- Propuesta v1.1: arquitectura real con Supabase y Vercel, entornos y costos.
+
+**Decisiones**
+
+- Variables de entorno cargadas en Vercel para producción, vista previa y desarrollo.
+- La clave secreta de Supabase nunca sale del servidor.
+
+---
+
+## v0.1 · 2026-10-29 — Fundación
+
+**Entregado**
+
+- Proyecto Next.js 16 con TypeScript y Tailwind 4.
+- Documento de propuesta v1.0: problema, objetivos, siete módulos con reglas de
+  negocio, roles, modelo de datos, arquitectura y plan por fases.
+- Base de datos en Supabase: ocho tablas del núcleo con RLS, autenticación y perfil
+  automático al crear usuario.
+- Inicio de sesión, panel por rol y diagnóstico de conexión.
+
+**Decisiones**
+
+- El alcance excluye contabilidad y manejo de dinero; el estado de cuotas es
+  informativo.
+- Modelo preparado para varios conjuntos desde el inicio.
 - El aislamiento se aplica en la base con RLS, no en la interfaz.
-- El Admin no ve datos sin un acceso de soporte vigente, y todo acceso queda visible
-  para la Administración del conjunto.
-- Las cuotas se fijan por periodo y se pueden importar desde Excel, con vista previa
-  y validación de sumas.
-- Para operar git se usa el binario que trae GitHub Desktop (no hay git en el PATH).
 
-### Pendiente al cierre
+---
 
-- Personas y vinculaciones (propietarios, residentes, arrendatarios) por unidad.
+## Pendiente para la siguiente versión
+
+- Personas y vinculaciones por unidad (propietarios, residentes, arrendatarios).
 - Edición y desactivación de unidades.
 - Importación de unidades desde Excel/CSV.
-- Navegación del Admin en modo soporte (lectura del conjunto con acceso activo).
+- Navegación del Admin en modo soporte.
 - Módulos de portería, paquetería, reservas, PQRS, comunicados, asambleas y cuotas.
 
-### Referencias
+## Referencias
 
-- Repositorio: `abotiva/miconjunto`, rama `main`, último commit del día `c8f5b33`.
+- Repositorio: `abotiva/miconjunto`, rama `main`.
 - Producción: https://miconjunto-rose.vercel.app
 - Propuesta vigente: `docs/propuesta/Propuesta_MiConjunto_v1.3.pdf`
