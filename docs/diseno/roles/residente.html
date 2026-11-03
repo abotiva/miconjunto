@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Residentes · Patio cálido — MiConjunto</title>
+<style>
+  :root{
+    --bg:#F3EDE3;
+    --surface:#FFFCF6;
+    --sand:#EFE6D9;
+    --line:#E6DCCD;
+    --ink:#2B2521;
+    --mut:#6B5D51;
+    --terracotta:#B44E2B;
+    --forest:#2C4638;
+    --sage:#DCE5D7;
+    --teal:#0E7A6B;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    width:1440px;height:1024px;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
+  }
+  .screen{width:1440px;height:1024px;display:flex;position:relative;overflow:hidden}
+  .serif{font-family:Georgia,"Times New Roman",serif;font-weight:400}
+  /* ---------- sidebar ---------- */
+  aside{width:244px;flex:none;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 16px 18px}
+  .logo{display:flex;align-items:center;gap:10px;padding:0 6px}
+  .logo .mark{width:34px;height:34px;border-radius:9px;background:var(--forest);display:grid;place-items:center;flex:none;box-shadow:0 4px 12px -5px rgba(44,70,56,.6)}
+  .logo p{font-size:17px;font-weight:600;letter-spacing:-.3px;line-height:1;color:var(--ink)}
+  .logo span{display:block;font-size:8px;letter-spacing:.19em;color:var(--mut);margin-top:5px;text-transform:uppercase}
+  .selector{margin-top:20px;border:1px solid var(--line);border-radius:10px;padding:10px 11px;display:flex;align-items:center;gap:9px;background:var(--sand)}
+  .selector .sq{width:26px;height:26px;border-radius:6px;background:var(--surface);display:grid;place-items:center;color:var(--forest);flex:none}
+  .selector p{font-size:11.5px;font-weight:600;line-height:1.2;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .selector span{font-size:9px;color:var(--mut)}
+  .navgroup{margin-top:22px}
+  .navgroup .gl{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#9A8A79;padding:0 10px;margin-bottom:7px;font-weight:600}
+  .nav a{display:flex;align-items:center;gap:10px;height:35px;padding:0 10px;border-radius:7px;text-decoration:none;color:#5C4E42;font-size:12.5px;position:relative;margin-bottom:1px}
+  .nav a svg{color:#8A7A69;flex:none}
+  .nav a.active{background:var(--sand);color:var(--forest);font-weight:600}
+  .nav a.active::before{content:"";position:absolute;left:-16px;top:7px;bottom:7px;width:3px;border-radius:0 3px 3px 0;background:var(--terracotta)}
+  .nav a.active svg{color:var(--terracotta)}
+  .nav a.soon{color:#A99B8C}
+  .nav a.soon svg{color:#B3A696}
+  .nav .b{margin-left:auto;font-size:9px;font-weight:600;background:var(--surface);color:var(--mut);border-radius:4px;padding:1px 5px;border:1px solid var(--line)}
+  .nav .soon .b{background:transparent;border:0;color:#B3A696;text-transform:uppercase;letter-spacing:.06em;font-size:7.5px}
+  .sidefoot{margin-top:auto}
+  .help{border:1px solid var(--line);background:var(--sand);border-radius:10px;padding:11px;display:flex;gap:9px;align-items:flex-start}
+  .help svg{color:var(--terracotta);flex:none;margin-top:1px}
+  .help p{font-size:10.5px;font-weight:600;color:var(--ink)}
+  .help span{display:block;font-size:9px;color:var(--mut);margin-top:2px;line-height:1.4}
+  .user{display:flex;align-items:center;gap:9px;padding:13px 6px 0;border-top:1px solid var(--line);margin-top:12px}
+  .user .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(145deg,#7E5B45,#4A3527);color:#fff;display:grid;place-items:center;font-size:10.5px;font-weight:600;flex:none}
+  .user p{font-size:11.5px;font-weight:600;color:var(--ink)}
+  .user span{font-size:9.5px;color:var(--mut)}
+  /* ---------- main ---------- */
+  main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .topbar{height:64px;flex:none;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 34px;gap:16px}
+  .topbar .l{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);font-weight:600}
+  .topbar .who p{font-size:12.5px;font-weight:600;color:var(--ink);margin-top:1px}
+  .topright{margin-left:auto;display:flex;align-items:center;gap:16px}
+  .date{font-size:10.5px;color:var(--mut)}
+  .rolechip{font-size:10.5px;font-weight:600;color:var(--forest);background:var(--sage);border-radius:99px;padding:5px 11px}
+  .exit{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--mut);font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+  /* ---------- content ---------- */
+  .content{flex:1;padding:22px 36px 24px;display:flex;flex-direction:column;min-height:0}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+  h1{font-size:31px;line-height:1.1;letter-spacing:-.4px;color:var(--ink)}
+  .head .sub{font-size:11.5px;color:var(--mut);margin-top:6px}
+  .head .sub b{color:var(--ink);font-weight:600}
+  .btn{height:34px;padding:0 14px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;gap:7px;text-decoration:none}
+  .btn.forest{background:var(--forest);border-color:var(--forest);color:#FBF7F0}
+  .btn.terra{background:transparent;border-color:#DCC3B4;color:var(--terracotta)}
+  /* ---------- hero cuota ---------- */
+  .hero{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:26px;box-shadow:0 18px 40px -38px rgba(43,37,33,.7);flex:none}
+  .hero .main{flex:1;min-width:0}
+  .hero .lbl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--terracotta);font-weight:600}
+  .hero .row{display:flex;align-items:baseline;gap:12px;margin-top:5px}
+  .hero .amount{font-size:38px;line-height:1;letter-spacing:-1px;color:var(--ink)}
+  .hero .cur{font-size:16px;color:var(--mut);margin-right:2px}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;color:var(--forest);background:var(--sage);border-radius:99px;padding:3px 9px}
+  .chip i{width:4px;height:4px;border-radius:50%;background:currentColor}
+  .hero .note{font-size:11px;color:var(--mut);margin-top:7px}
+  .hero .note b{color:var(--ink);font-weight:600}
+  .hero .div{width:1px;align-self:stretch;background:var(--line)}
+  .hero .side{width:250px;flex:none}
+  .hero .side .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:600}
+  .hero .side ul{margin-top:6px}
+  .hero .side li{list-style:none;display:flex;justify-content:space-between;font-size:10.5px;color:var(--mut);padding:2px 0}
+  .hero .side li b{color:var(--ink);font-weight:600}
+  .hero .side .btn{margin-top:8px;width:100%;justify-content:center}
+  /* ---------- quick cards ---------- */
+  .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;flex:none}
+  .q{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start}
+  .q .ic{width:32px;height:32px;border-radius:8px;background:var(--sand);display:grid;place-items:center;color:var(--forest);flex:none}
+  .q .k{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);font-weight:600}
+  .q .v{font-size:16px;color:var(--ink);margin-top:3px;letter-spacing:-.2px}
+  .q .v small{font-size:10px;color:var(--mut);letter-spacing:0}
+  .q .n{font-size:9.5px;color:var(--mut);margin-top:3px}
+  .q a{font-size:9.5px;font-weight:600;color:var(--terracotta);text-decoration:none;margin-top:5px;display:inline-block}
+  /* ---------- grid ---------- */
+  .grid{display:grid;grid-template-columns:1fr 330px;gap:14px;margin-top:14px;flex:1;min-height:0}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+  .ch{display:flex;align-items:flex-start;gap:10px;padding:15px 18px 0;flex:none}
+  .ch h2{font-size:18px;line-height:1.2;letter-spacing:-.2px;color:var(--ink)}
+  .ch .cap{font-size:9.5px;color:var(--mut);margin-top:3px}
+  .ch .right{margin-left:auto;display:flex;align-items:center;gap:8px;padding-top:3px}
+  .ch .right a{font-size:9.5px;font-weight:600;color:var(--terracotta);text-decoration:none}
+  /* mural */
+  .mural{flex:1;padding:6px 18px 4px;display:flex;flex-direction:column;justify-content:space-around}
+  .post{display:flex;gap:12px;padding:11px 0;border-top:1px solid #F1E9DD}
+  .post:first-child{border-top:0}
+  .post .dt{width:38px;flex:none;text-align:center;border-right:1px solid var(--line);padding-right:8px}
+  .post .dt b{display:block;font-size:17px;font-weight:600;color:var(--ink);line-height:1}
+  .post .dt span{display:block;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-top:3px}
+  .post .body{min-width:0}
+  .post .tag{display:inline-block;font-size:7.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--sand);color:var(--forest);margin-bottom:4px}
+  .post .tag.alert{background:#F6E2D8;color:var(--terracotta)}
+  .post h3{font-size:14px;line-height:1.25;color:var(--ink);letter-spacing:-.1px}
+  .post p{font-size:10.5px;line-height:1.45;color:var(--mut);margin-top:3px}
+  .post .meta{font-size:8.5px;color:#9A8A79;margin-top:4px}
+  .mural-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:9px 0;font-size:9.5px;color:var(--mut);flex:none}
+  .mural-foot a{color:var(--terracotta);text-decoration:none;font-weight:600}
+  /* side cards */
+  .col{display:flex;flex-direction:column;gap:14px;min-height:0}
+  .unit{flex:1.1;min-height:0}
+  .unit ul{padding:6px 18px 4px;flex:1;display:flex;flex-direction:column;justify-content:space-around}
+  .unit li{list-style:none;display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid #F1E9DD}
+  .unit li:first-child{border-top:0}
+  .unit .ic{width:26px;height:26px;border-radius:7px;background:var(--sand);display:grid;place-items:center;color:var(--forest);flex:none}
+  .unit p{font-size:10.5px;font-weight:600;color:var(--ink);line-height:1.2}
+  .unit span{display:block;font-size:8.5px;color:var(--mut);margin-top:2px}
+  .unit .n{margin-left:auto;font-size:10px;font-weight:600;color:var(--mut)}
+  .pqrs{flex:.9;min-height:0}
+  .pqrs .inner{padding:8px 18px 14px;flex:1;display:flex;flex-direction:column;justify-content:center}
+  .pqrs .st{display:inline-flex;align-items:center;gap:5px;font-size:8.5px;font-weight:700;color:#8A5A12;background:#F8ECD6;border-radius:99px;padding:2px 8px;width:max-content}
+  .pqrs .st i{width:4px;height:4px;border-radius:50%;background:currentColor}
+  .pqrs h3{font-size:12.5px;font-weight:600;color:var(--ink);margin-top:7px;line-height:1.3}
+  .pqrs p{font-size:9.5px;color:var(--mut);margin-top:3px}
+  .pqrs a{font-size:9.5px;font-weight:600;color:var(--terracotta);text-decoration:none;margin-top:8px}
+  .footstrip{margin-top:14px;flex:none;display:flex;align-items:center;gap:10px;background:var(--forest);color:#E9E1D4;border-radius:10px;padding:9px 250px 9px 14px}
+  .footstrip svg{color:#C9D8C6;flex:none}
+  .footstrip p{font-size:10.5px}
+  .footstrip b{color:#fff;font-weight:600}
+  .footstrip .go{margin-left:auto;font-size:9.5px;font-weight:600;color:#DCE5D7;text-decoration:none}
+  .badge{position:absolute;right:48px;bottom:33px;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:#C9D8C6;background:rgba(255,255,255,.08);border:1px solid rgba(220,229,215,.22);padding:4px 9px;border-radius:99px}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <aside>
+    <div class="logo">
+      <span class="mark">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FBF7F0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 11.5 12 4l8 7.5"/><path d="M6 10.5V20h12v-9.5"/><path d="M10 20v-5h4v5"/>
+        </svg>
+      </span>
+      <div>
+        <p>MiConjunto</p>
+        <span>Residente</span>
+      </div>
+    </div>
+
+    <div class="selector">
+      <span class="sq">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>
+      </span>
+      <div style="min-width:0">
+        <p>Torre B · 502</p>
+        <span>Altos del Nogal · Bogotá</span>
+      </div>
+    </div>
+
+    <div class="navgroup">
+      <p class="gl">Mi hogar</p>
+      <nav class="nav">
+        <a class="active" href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10.5V20h12v-9.5"/><path d="M10 20v-5h4v5"/></svg>
+          Inicio
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>
+          Mi unidad
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Cuotas
+          <span class="b">1</span>
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+          Reservas
+        </a>
+      </nav>
+    </div>
+
+    <div class="navgroup">
+      <p class="gl">Comunidad</p>
+      <nav class="nav">
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4h3l5 4V6L6 10H3Z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>
+          Comunicados
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V6a3 3 0 0 1 3-3h11a4 4 0 0 1 4 4v8Z"/></svg>
+          PQRS
+          <span class="b">1</span>
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M14.5 12h.01"/></svg>
+          Portería
+        </a>
+        <a class="soon" href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16.5 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Asambleas
+          <span class="b">pronto</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidefoot">
+      <div class="help">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V6a3 3 0 0 1 3-3h11a4 4 0 0 1 4 4v8Z"/></svg>
+        <div>
+          <p>¿Necesitas ayuda?</p>
+          <span>Escribe a la administración del conjunto.</span>
+        </div>
+      </div>
+      <div class="user">
+        <span class="av">CR</span>
+        <div>
+          <p>Camila Restrepo</p>
+          <span>Propietaria · Torre B · 502</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div class="who">
+        <p class="l">Conjunto</p>
+        <p>Altos del Nogal</p>
+      </div>
+      <div class="topright">
+        <span class="date">Martes, 3 de noviembre de 2026</span>
+        <span class="rolechip">Residente</span>
+        <span class="exit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Salir
+        </span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="head">
+        <div>
+          <h1 class="serif">Buenas tardes, Camila</h1>
+          <p class="sub">Torre B · Apartamento 502 · <b>Altos del Nogal</b></p>
+        </div>
+        <a class="btn terra" href="#">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Autorizar visita
+        </a>
+      </div>
+
+      <section class="hero">
+        <div class="main">
+          <p class="lbl">Cuota de noviembre</p>
+          <div class="row">
+            <p class="amount serif"><span class="cur">$</span>285.000</p>
+            <span class="chip"><i></i>Al día</span>
+          </div>
+          <p class="note">Vence el <b>10 de noviembre</b> · pago registrado el 1 de noviembre</p>
+        </div>
+        <div class="div"></div>
+        <div class="side">
+          <p class="k">Composición del mes</p>
+          <ul>
+            <li><span>Administración</span><b>$ 231.000</b></li>
+            <li><span>Fondo de reserva</span><b>$ 54.000</b></li>
+          </ul>
+          <a class="btn" href="#">Ver estado de cuenta</a>
+        </div>
+      </section>
+
+      <div class="quick">
+        <div class="q">
+          <span class="ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m19 5-14 14"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg>
+          </span>
+          <div>
+            <p class="k">Tu coeficiente</p>
+            <p class="v">0,8123 %</p>
+            <p class="n">Participación en la copropiedad</p>
+          </div>
+        </div>
+        <div class="q">
+          <span class="ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+          </span>
+          <div>
+            <p class="k">Próxima reserva</p>
+            <p class="v">Salón comunal</p>
+            <p class="n">Sábado 8 de noviembre · 2:00 p.m.</p>
+            <a href="#">Ver mis reservas</a>
+          </div>
+        </div>
+        <div class="q">
+          <span class="ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M14.5 12h.01"/></svg>
+          </span>
+          <div>
+            <p class="k">Visitas</p>
+            <p class="v">1 autorizada hoy</p>
+            <p class="n">Mensajería · llega 4:30 p.m.</p>
+            <a href="#">Ver pase de visita</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="card">
+          <div class="ch">
+            <div>
+              <h2 class="serif">Mural del conjunto</h2>
+              <p class="cap">Lo último de la administración y del comité</p>
+            </div>
+            <div class="right"><a href="#">Ver todos</a></div>
+          </div>
+          <div class="mural">
+            <article class="post">
+              <div class="dt"><b>08</b><span>nov</span></div>
+              <div class="body">
+                <span class="tag alert">Asamblea</span>
+                <h3>Asamblea ordinaria de copropietarios</h3>
+                <p>Sábado 15 de noviembre, 9:00 a.m., salón comunal. Orden del día: presupuesto 2027 y elección de consejo.</p>
+                <p class="meta">Publicado por Administración · hace 2 días</p>
+              </div>
+            </article>
+            <article class="post">
+              <div class="dt"><b>06</b><span>nov</span></div>
+              <div class="body">
+                <span class="tag">Mantenimiento</span>
+                <h3>Mantenimiento preventivo de ascensores</h3>
+                <p>Torre B, miércoles 12 de noviembre de 8:00 a.m. a 12:00 m. Habrá un ascensor disponible.</p>
+                <p class="meta">Publicado por Administración · hace 4 días</p>
+              </div>
+            </article>
+            <article class="post">
+              <div class="dt"><b>02</b><span>nov</span></div>
+              <div class="body">
+                <span class="tag">Seguridad</span>
+                <h3>Nuevo horario de la zona de mascotas</h3>
+                <p>De 6:00 a.m. a 10:00 p.m. Recuerda recoger los residuos y mantener las correas en zonas comunes.</p>
+                <p class="meta">Publicado por Comité · hace 8 días</p>
+              </div>
+            </article>
+            <article class="post">
+              <div class="dt"><b>30</b><span>oct</span></div>
+              <div class="body">
+                <span class="tag">Movilidad</span>
+                <h3>Parqueadero de visitantes: nuevas reglas</h3>
+                <p>Máximo 4 horas y registro obligatorio en portería. Aplica desde el 1 de noviembre.</p>
+                <p class="meta">Publicado por Administración · hace 11 días</p>
+              </div>
+            </article>
+          </div>
+          <div class="mural-foot">
+            <span>4 comunicados nuevos esta semana</span>
+            <a href="#">Abrir el mural completo →</a>
+          </div>
+        </section>
+
+        <div class="col">
+          <section class="card unit">
+            <div class="ch">
+              <div>
+                <h2 class="serif">Tu unidad</h2>
+                <p class="cap">Torre B · Apartamento 502 · 86 m²</p>
+              </div>
+            </div>
+            <ul>
+              <li>
+                <span class="ic">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/></svg>
+                </span>
+                <div><p>Personas</p><span>Camila, Tomás y Sofía</span></div>
+                <span class="n">3</span>
+              </li>
+              <li>
+                <span class="ic">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-1.5-6.5A2 2 0 0 0 15.6 9H8.4a2 2 0 0 0-1.9 1.5L5 17Z"/><circle cx="7.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/></svg>
+                </span>
+                <div><p>Vehículos</p><span>Camioneta · KLM 903</span></div>
+                <span class="n">1</span>
+              </li>
+              <li>
+                <span class="ic">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20c-3 0-5-2-5-5 0-4 4-7 6-9 2 2 6 5 6 9 0 3-2 5-5 5Z"/><path d="M9 12h.01M13 12h.01"/></svg>
+                </span>
+                <div><p>Mascotas</p><span>Luna · perro · registro vigente</span></div>
+                <span class="n">1</span>
+              </li>
+            </ul>
+            <div class="mural-foot" style="padding:9px 18px">
+              <span>Datos actualizados en octubre</span>
+              <a href="#">Editar mi unidad</a>
+            </div>
+          </section>
+
+          <section class="card pqrs">
+            <div class="ch">
+              <div>
+                <h2 class="serif">Tu PQRS</h2>
+                <p class="cap">Radicado P-2041 · 1 de noviembre</p>
+              </div>
+              <div class="right"><a href="#">Ver todas</a></div>
+            </div>
+            <div class="inner">
+              <span class="st"><i></i>En revisión</span>
+              <h3>Ruido en la zona común de la Torre C</h3>
+              <p>La administración respondió: se ajustó el horario de la zona social.</p>
+              <a href="#">Ver respuesta completa →</a>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="footstrip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M14.5 12h.01"/></svg>
+        <p>Portería 24 horas · <b>Ext. 101</b> · Altos del Nogal</p>
+        <a class="go" href="#">Llamar a portería →</a>
+      </div>
+    </div>
+  </main>
+
+  <span class="badge">Diseño · datos de ejemplo</span>
+</div>
+</body>
+</html>

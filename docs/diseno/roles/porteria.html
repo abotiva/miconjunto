@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Portería · Modo operación — MiConjunto</title>
+<style>
+  :root{
+    --bg:#0B1418;
+    --panel:#111D22;
+    --panel-2:#0E181D;
+    --line:#1E2E35;
+    --line-soft:#182930;
+    --text:#E8F0F2;
+    --mut:#8FA3AC;
+    --dim:#6C808A;
+    --teal:#3FC2AE;
+    --teal-soft:#12312F;
+    --amber:#FFB257;
+    --amber-soft:#33240F;
+    --red:#FF8072;
+    --red-soft:#33191A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    width:1440px;height:1024px;overflow:hidden;background:var(--bg);color:var(--text);
+    font-family:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
+  }
+  .screen{width:1440px;height:1024px;display:flex;position:relative;overflow:hidden}
+  /* ---------- rail ---------- */
+  aside{width:230px;flex:none;background:var(--panel-2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:20px 14px 16px}
+  .logo{display:flex;align-items:center;gap:10px;padding:0 6px}
+  .logo .mark{width:34px;height:34px;border-radius:9px;background:var(--teal);display:grid;place-items:center;flex:none;box-shadow:0 6px 16px -8px rgba(63,194,174,.8)}
+  .logo p{font-size:16px;font-weight:600;letter-spacing:-.3px;line-height:1;color:#F2F7F8}
+  .logo span{display:block;font-size:8px;letter-spacing:.2em;color:var(--mut);margin-top:5px;text-transform:uppercase}
+  .selector{margin-top:18px;border:1px solid var(--line);border-radius:9px;padding:9px 10px;display:flex;align-items:center;gap:8px;background:#0D1A1F}
+  .selector .sq{width:25px;height:25px;border-radius:6px;background:var(--teal-soft);display:grid;place-items:center;color:var(--teal);flex:none}
+  .selector p{font-size:11px;font-weight:600;line-height:1.2;color:#DDE9EC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .selector span{font-size:8.5px;color:var(--mut)}
+  .navgroup{margin-top:20px}
+  .navgroup .gl{font-size:8px;letter-spacing:.17em;text-transform:uppercase;color:var(--dim);padding:0 9px;margin-bottom:6px;font-weight:600}
+  .nav a{display:flex;align-items:center;gap:9px;height:34px;padding:0 9px;border-radius:7px;text-decoration:none;color:#A9BCC4;font-size:12px;position:relative;margin-bottom:1px}
+  .nav a svg{color:#6C808A;flex:none}
+  .nav a.active{background:var(--teal-soft);color:var(--teal);font-weight:600}
+  .nav a.active::before{content:"";position:absolute;left:-14px;top:7px;bottom:7px;width:3px;border-radius:0 3px 3px 0;background:var(--teal)}
+  .nav a.active svg{color:var(--teal)}
+  .nav .b{margin-left:auto;font-size:8.5px;font-weight:700;background:#1B2C33;color:#A9BCC4;border-radius:4px;padding:1px 5px}
+  .nav .b.warn{background:var(--amber-soft);color:var(--amber)}
+  .sidefoot{margin-top:auto}
+  .mode{border:1px solid var(--line);background:#0D1A1F;border-radius:9px;padding:9px 10px;display:flex;gap:8px;align-items:center}
+  .mode i{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(63,194,174,.15);flex:none}
+  .mode p{font-size:10px;font-weight:600;color:#DDE9EC}
+  .mode span{display:block;font-size:8.5px;color:var(--mut);margin-top:1px}
+  .user{display:flex;align-items:center;gap:9px;padding:12px 4px 0;border-top:1px solid var(--line);margin-top:12px}
+  .user .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(145deg,#2E6C7E,#173B4A);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:700;flex:none}
+  .user p{font-size:11px;font-weight:600;color:#DDE9EC}
+  .user span{font-size:8.5px;color:var(--mut)}
+  /* ---------- main ---------- */
+  main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .topbar{height:62px;flex:none;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 26px;gap:14px}
+  .search{display:flex;align-items:center;gap:9px;width:320px;height:36px;border:1px solid var(--line);border-radius:8px;padding:0 12px;color:var(--dim);font-size:11.5px;background:#0D1A1F}
+  .search .kbd{margin-left:auto;font-size:8.5px;border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--dim)}
+  .topright{margin-left:auto;display:flex;align-items:center;gap:14px}
+  .clock{text-align:right;line-height:1}
+  .clock b{font-size:22px;font-weight:600;letter-spacing:-.4px;color:#F2F7F8}
+  .clock span{display:block;font-size:9px;color:var(--mut);margin-top:4px}
+  .shift{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:#0D1A1F;border-radius:99px;padding:6px 11px;font-size:9.5px;color:#C3D4DA;font-weight:600}
+  .shift i{width:5px;height:5px;border-radius:50%;background:var(--teal)}
+  /* ---------- content ---------- */
+  .content{flex:1;padding:22px 26px 24px;display:flex;flex-direction:column;min-height:0}
+  .crumb{font-size:9.5px;color:var(--dim);letter-spacing:.03em}
+  .crumb b{color:var(--teal);font-weight:600}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-top:7px}
+  h1{font-size:25px;font-weight:600;letter-spacing:-.6px;color:#F2F7F8;line-height:1.15}
+  .head .sub{font-size:11px;color:var(--mut);margin-top:5px}
+  .actions{display:flex;gap:8px}
+  .btn{height:34px;padding:0 13px;border-radius:7px;border:1px solid var(--line);background:#0D1A1F;color:#C3D4DA;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:7px;text-decoration:none}
+  .btn.primary{background:var(--teal);border-color:var(--teal);color:#06201D}
+  .btn.ghost i{width:5px;height:5px;border-radius:50%;background:var(--amber)}
+  /* ---------- kpis ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 13px;display:flex;gap:10px;align-items:flex-start}
+  .kpi .ic{width:30px;height:30px;border-radius:7px;background:#16272E;display:grid;place-items:center;color:#9DB2BB;flex:none}
+  .kpi.teal .ic{background:var(--teal-soft);color:var(--teal)}
+  .kpi.amber .ic{background:var(--amber-soft);color:var(--amber)}
+  .kpi .k{font-size:8.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--mut);font-weight:700}
+  .kpi .v{font-size:26px;font-weight:600;color:#F2F7F8;line-height:1.05;margin-top:3px;letter-spacing:-.7px}
+  .kpi .n{font-size:9.5px;color:var(--dim);margin-top:3px}
+  .kpi.amber .n b{color:var(--amber);font-weight:600}
+  /* ---------- grid ---------- */
+  .grid{display:grid;grid-template-columns:1fr 316px;gap:14px;margin-top:14px;flex:1;min-height:0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+  .ch{display:flex;align-items:center;gap:10px;padding:12px 16px 0;flex:none}
+  .ch h2{font-size:12px;font-weight:600;color:#E8F0F2;letter-spacing:-.1px}
+  .ch .cap{font-size:9px;color:var(--mut);margin-top:1px}
+  .ch .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .live{display:flex;align-items:center;gap:6px;font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+  .live i{width:5px;height:5px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(63,194,174,.16)}
+  .filter{font-size:9.5px;color:#A9BCC4;border:1px solid var(--line);border-radius:5px;padding:3px 7px;display:flex;align-items:center;gap:5px;background:#0D1A1F}
+  /* table */
+  .log{flex:1;min-height:0;display:flex;flex-direction:column;margin-top:10px}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:8px;letter-spacing:.11em;text-transform:uppercase;color:var(--dim);text-align:left;font-weight:700;padding:7px 16px;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:#0D1A1F}
+  td{font-size:10.5px;padding:8px 16px;border-bottom:1px solid var(--line-soft);color:#A9BCC4;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  td.h{font-weight:600;color:#DDE9EC;font-size:10.5px}
+  td.ev{color:#DDE9EC;font-weight:600}
+  td.ev span{display:block;font-weight:400;font-size:8.5px;color:var(--dim);margin-top:1px}
+  .est{display:inline-flex;align-items:center;gap:5px;font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:99px;background:#16272E;color:#9DB2BB}
+  .est i{width:4px;height:4px;border-radius:50%;background:currentColor}
+  .est.in{background:var(--teal-soft);color:var(--teal)}
+  .est.wait{background:var(--amber-soft);color:var(--amber)}
+  .est.out{background:#16272E;color:#7E939C}
+  .est.red{background:var(--red-soft);color:var(--red)}
+  .tfoot{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;border-top:1px solid var(--line-soft);font-size:9px;color:var(--dim);margin-top:auto}
+  .tfoot a{color:var(--teal);text-decoration:none;font-weight:600}
+  /* right column */
+  .col{display:flex;flex-direction:column;gap:14px;min-height:0}
+  .pkg{flex:1.15;min-height:0}
+  .pkg ul{padding:4px 14px 6px;flex:1;display:flex;flex-direction:column;justify-content:space-around}
+  .pkg li{list-style:none;display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line-soft)}
+  .pkg li:first-child{border-top:0}
+  .pkg .u{font-size:10.5px;font-weight:700;color:#DDE9EC;width:42px;flex:none;padding-top:1px}
+  .pkg .t{min-width:0;flex:1}
+  .pkg .t p{font-size:10.5px;font-weight:600;color:#DDE9EC;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pkg .t span{display:block;font-size:8.5px;color:var(--dim);margin-top:2px}
+  .pkg .w{font-size:8.5px;font-weight:700;color:#9DB2BB;background:#16272E;border-radius:4px;padding:2px 6px;white-space:nowrap;flex:none}
+  .pkg .w.late{background:var(--amber-soft);color:var(--amber)}
+  .visits{flex:.95;min-height:0}
+  .visits ul{padding:4px 14px 8px;flex:1;display:flex;flex-direction:column;justify-content:space-around}
+  .visits li{list-style:none;display:flex;gap:9px;align-items:center;padding:6px 0;border-top:1px solid var(--line-soft)}
+  .visits li:first-child{border-top:0}
+  .visits .hr{font-size:10px;font-weight:700;color:var(--teal);width:36px;flex:none}
+  .visits p{font-size:10px;font-weight:600;color:#DDE9EC;line-height:1.2}
+  .visits span{display:block;font-size:8.5px;color:var(--dim);margin-top:2px}
+  .visits .tag{margin-left:auto;font-size:8px;font-weight:700;color:#9DB2BB;background:#16272E;border-radius:4px;padding:2px 5px;white-space:nowrap}
+  .footlink{padding:0 14px 11px;font-size:9px;color:var(--dim);display:flex;justify-content:space-between;align-items:center;flex:none}
+  .footlink a{color:var(--teal);text-decoration:none;font-weight:600}
+  .badge{position:absolute;left:50%;transform:translateX(-50%);bottom:4px;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:#5C707A;background:rgba(11,20,24,.85);border:1px solid var(--line);padding:3px 9px;border-radius:99px}
+  .novedad{display:flex;align-items:center;gap:7px;margin-left:auto;font-size:9px;color:var(--amber);font-weight:600}
+  .novedad i{width:5px;height:5px;border-radius:50%;background:var(--amber)}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <aside>
+    <div class="logo">
+      <span class="mark">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#06201D" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 11.5 12 4l8 7.5"/><path d="M6 10.5V20h12v-9.5"/><path d="M10 20v-5h4v5"/>
+        </svg>
+      </span>
+      <div>
+        <p>MiConjunto</p>
+        <span>Portería</span>
+      </div>
+    </div>
+
+    <div class="selector">
+      <span class="sq">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/>
+        </svg>
+      </span>
+      <div style="min-width:0">
+        <p>Altos del Nogal</p>
+        <span>Bogotá · 128 unidades</span>
+      </div>
+    </div>
+
+    <div class="navgroup">
+      <p class="gl">Turno</p>
+      <nav class="nav">
+        <a class="active" href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+          Bitácora
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M14.5 12h.01"/></svg>
+          Visitas
+          <span class="b warn">7</span>
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-9-5-9 5v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg>
+          Paquetería
+          <span class="b warn">6</span>
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          Novedades
+          <span class="b">2</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="navgroup">
+      <p class="gl">Conjunto</p>
+      <nav class="nav">
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>
+          Unidades
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16.5 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Directorio
+        </a>
+        <a href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-1.5-6.5A2 2 0 0 0 15.6 9H8.4a2 2 0 0 0-1.9 1.5L5 17Z"/><circle cx="7.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/></svg>
+          Vehículos
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidefoot">
+      <div class="mode">
+        <i></i>
+        <div>
+          <p>Modo operación</p>
+          <span>Alto contraste · turno activo</span>
+        </div>
+      </div>
+      <div class="user">
+        <span class="av">JC</span>
+        <div>
+          <p>Jhon Cuervo</p>
+          <span>Portería · turno mañana</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        Buscar unidad, placa o documento
+        <span class="kbd">Ctrl K</span>
+      </div>
+      <div class="topright">
+        <span class="shift"><i></i> Turno mañana · 06:00–14:00</span>
+        <div class="clock">
+          <b>10:42</b>
+          <span>martes, 3 de noviembre</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <p class="crumb">Portería <span style="opacity:.5">/</span> <b>Turno</b></p>
+      <div class="head">
+        <div>
+          <h1>Bitácora del turno</h1>
+          <p class="sub">Altos del Nogal · Bogotá · 128 unidades · 6 torres</p>
+        </div>
+        <div class="actions">
+          <a class="btn ghost" href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+            Registrar novedad
+          </a>
+          <a class="btn" href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-9-5-9 5v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg>
+            Recibir paquete
+          </a>
+          <a class="btn primary" href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Registrar ingreso
+          </a>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi teal">
+          <span class="ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M14.5 12h.01"/></svg>
+          </span>
+          <div>
+            <p class="k">Visitas dentro</p>
+            <p class="v">7</p>
+            <p class="n">de 12 autorizadas hoy</p>
+          </div>
+        </div>
+        <div class="kpi amber">
+          <span class="ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-9-5-9 5v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg>
+          </span>
+          <div>
+            <p class="k">Paquetes por entregar</p>
+            <p class="v">6</p>
+            <p class="n"><b>2</b> llevan más de 24 h</p>
+          </div>
+        </div>
+        <div class="kpi">
+          <span class="ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-1.5-6.5A2 2 0 0 0 15.6 9H8.4a2 2 0 0 0-1.9 1.5L5 17Z"/><circle cx="7.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/></svg>
+          </span>
+          <div>
+            <p class="k">Vehículos dentro</p>
+            <p class="v">23</p>
+            <p class="n">de 41 registrados</p>
+          </div>
+        </div>
+        <div class="kpi">
+          <span class="ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          </span>
+          <div>
+            <p class="k">Novedades abiertas</p>
+            <p class="v">2</p>
+            <p class="n">1 sin asignar</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="card log">
+          <div class="ch">
+            <div>
+              <h2>Movimientos de hoy</h2>
+              <p class="cap">Entradas, salidas y entregas registradas en portería</p>
+            </div>
+            <div class="right">
+              <span class="live"><i></i> En vivo</span>
+              <span class="filter">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+                Todos
+              </span>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Hora</th><th>Movimiento</th><th>Unidad</th><th>Persona / detalle</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="h">10:38</td>
+                <td class="ev">Ingreso peatonal<span>Autorizado por residente</span></td>
+                <td>B-502</td>
+                <td>Camila Restrepo</td>
+                <td><span class="est in"><i></i>Dentro</span></td>
+              </tr>
+              <tr>
+                <td class="h">10:31</td>
+                <td class="ev">Paquete recibido<span>Servientrega · 1 caja</span></td>
+                <td>A-304</td>
+                <td>Ana Gómez</td>
+                <td><span class="est wait"><i></i>Por entregar</span></td>
+              </tr>
+              <tr>
+                <td class="h">10:24</td>
+                <td class="ev">Salida vehículo<span>ABX 412 · Toyota</span></td>
+                <td>C-1101</td>
+                <td>Andrés Rojas</td>
+                <td><span class="est out"><i></i>Salió</span></td>
+              </tr>
+              <tr>
+                <td class="h">10:12</td>
+                <td class="ev">Visita autorizada<span>Transporte · 1 persona</span></td>
+                <td>D-201</td>
+                <td>Mensajería Servientrega</td>
+                <td><span class="est in"><i></i>Dentro</span></td>
+              </tr>
+              <tr>
+                <td class="h">09:58</td>
+                <td class="ev">Ingreso peatonal<span>Visita familiar</span></td>
+                <td>E-803</td>
+                <td>Laura Mejía</td>
+                <td><span class="est in"><i></i>Dentro</span></td>
+              </tr>
+              <tr>
+                <td class="h">09:47</td>
+                <td class="ev">Paquete entregado<span>Firmado en recepción</span></td>
+                <td>B-502</td>
+                <td>Camila Restrepo</td>
+                <td><span class="est out"><i></i>Entregado</span></td>
+              </tr>
+              <tr>
+                <td class="h">09:32</td>
+                <td class="ev">Ingreso vehículo<span>P-14 · Mazda 3</span></td>
+                <td>F-1204</td>
+                <td>Diego Salazar</td>
+                <td><span class="est in"><i></i>Dentro</span></td>
+              </tr>
+              <tr>
+                <td class="h">09:15</td>
+                <td class="ev">Ingreso peatonal<span>Domicilio</span></td>
+                <td>F-1204</td>
+                <td>Rappi · Andrés Peña</td>
+                <td><span class="est out"><i></i>Salió</span></td>
+              </tr>
+              <tr>
+                <td class="h">09:04</td>
+                <td class="ev">Novedad reportada<span>Luminaria parqueadero 2</span></td>
+                <td>C-1101</td>
+                <td>Andrés Rojas</td>
+                <td><span class="est red"><i></i>Abierta</span></td>
+              </tr>
+              <tr>
+                <td class="h">08:51</td>
+                <td class="ev">Ingreso vehículo<span>Camioneta · KLM 903</span></td>
+                <td>B-502</td>
+                <td>Camila Restrepo</td>
+                <td><span class="est in"><i></i>Dentro</span></td>
+              </tr>
+              <tr>
+                <td class="h">08:33</td>
+                <td class="ev">Cambio de turno<span>Entrega de novedades</span></td>
+                <td>—</td>
+                <td>Jhon Cuervo</td>
+                <td><span class="est out"><i></i>Registrado</span></td>
+              </tr>
+              <tr>
+                <td class="h">08:20</td>
+                <td class="ev">Ingreso peatonal<span>Autorizado por residente</span></td>
+                <td>A-304</td>
+                <td>Ana Gómez</td>
+                <td><span class="est in"><i></i>Dentro</span></td>
+              </tr>
+              <tr>
+                <td class="h">08:05</td>
+                <td class="ev">Paquete recibido<span>Coordinadora · 1 caja</span></td>
+                <td>C-1101</td>
+                <td>Andrés Rojas</td>
+                <td><span class="est wait"><i></i>Por entregar</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tfoot">
+            <span>Mostrando 12 de 34 movimientos del turno</span>
+            <a href="#">Ver bitácora completa →</a>
+          </div>
+        </section>
+
+        <div class="col">
+          <section class="card pkg">
+            <div class="ch">
+              <div>
+                <h2>Paquetería pendiente</h2>
+                <p class="cap">6 paquetes esperando entrega</p>
+              </div>
+              <div class="right"><span class="filter">Más antiguos</span></div>
+            </div>
+            <ul>
+              <li>
+                <span class="u">A-304</span>
+                <div class="t"><p>Ana Gómez</p><span>2 paquetes · Servientrega</span></div>
+                <span class="w late">26 h</span>
+              </li>
+              <li>
+                <span class="u">C-1101</span>
+                <div class="t"><p>Andrés Rojas</p><span>1 paquete · Coordinadora</span></div>
+                <span class="w">5 h</span>
+              </li>
+              <li>
+                <span class="u">B-502</span>
+                <div class="t"><p>Camila Restrepo</p><span>1 paquete · Mercado Libre</span></div>
+                <span class="w">2 h</span>
+              </li>
+              <li>
+                <span class="u">E-803</span>
+                <div class="t"><p>Laura Mejía</p><span>2 paquetes · Envía</span></div>
+                <span class="w">40 min</span>
+              </li>
+              <li>
+                <span class="u">D-201</span>
+                <div class="t"><p>Mensajería Servientrega</p><span>1 sobre · documentos</span></div>
+                <span class="w">25 min</span>
+              </li>
+              <li>
+                <span class="u">F-1204</span>
+                <div class="t"><p>Diego Salazar</p><span>1 paquete · Amazon</span></div>
+                <span class="w">10 min</span>
+              </li>
+            </ul>
+            <div class="footlink">
+              <span>2 con más de 24 h</span>
+              <a href="#">Ver todo →</a>
+            </div>
+          </section>
+
+          <section class="card visits">
+            <div class="ch">
+              <div>
+                <h2>Visitas autorizadas</h2>
+                <p class="cap">Próximas del turno</p>
+              </div>
+              <div class="right"><span class="novedad"><i></i>3 pendientes</span></div>
+            </div>
+            <ul>
+              <li>
+                <span class="hr">11:00</span>
+                <div><p>Mudanza</p><span>D-201 · 3 personas · camión</span></div>
+                <span class="tag">Autorizada</span>
+              </li>
+              <li>
+                <span class="hr">12:30</span>
+                <div><p>Visita familiar</p><span>B-502 · 2 personas</span></div>
+                <span class="tag">Autorizada</span>
+              </li>
+              <li>
+                <span class="hr">13:15</span>
+                <div><p>Domicilio Rappi</p><span>E-803 · 1 persona</span></div>
+                <span class="tag">Autorizada</span>
+              </li>
+              <li>
+                <span class="hr">14:00</span>
+                <div><p>Técnico Claro</p><span>A-304 · 1 persona</span></div>
+                <span class="tag">Por confirmar</span>
+              </li>
+            </ul>
+            <div class="footlink">
+              <span>Turno termina a las 14:00</span>
+              <a href="#">Ver visitas →</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <span class="badge">Diseño · datos de ejemplo</span>
+</div>
+</body>
+</html>
