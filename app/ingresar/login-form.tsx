@@ -6,16 +6,18 @@ import { ingresar, type EstadoIngreso } from "./actions";
 
 const inicial: EstadoIngreso = { error: "" };
 
+const CAMPO =
+  "mt-1.5 w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition placeholder:text-[#9aa8b6] focus:border-teal focus:ring-2 focus:ring-teal/20";
+const ETIQUETA =
+  "block text-[10px] font-semibold uppercase tracking-[0.12em] text-muted";
+
 export function LoginForm() {
   const [estado, accion, pendiente] = useActionState(ingresar, inicial);
 
   return (
-    <form action={accion} className="mt-8 space-y-4">
+    <form action={accion} className="mt-7 space-y-4">
       <div>
-        <label
-          htmlFor="email"
-          className="block text-xs font-semibold uppercase tracking-wide text-[#5b6b7c]"
-        >
+        <label htmlFor="email" className={ETIQUETA}>
           Correo
         </label>
         <input
@@ -25,15 +27,12 @@ export function LoginForm() {
           required
           autoComplete="email"
           placeholder="tu@correo.com"
-          className="mt-1.5 w-full rounded-lg border border-[#dce3ea] bg-white px-3 py-2.5 text-sm text-[#1f2a36] outline-none transition focus:border-[#1f7a6b] focus:ring-2 focus:ring-[#1f7a6b]/20"
+          className={CAMPO}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="password"
-          className="block text-xs font-semibold uppercase tracking-wide text-[#5b6b7c]"
-        >
+        <label htmlFor="password" className={ETIQUETA}>
           Contraseña
         </label>
         <input
@@ -42,7 +41,7 @@ export function LoginForm() {
           type="password"
           required
           autoComplete="current-password"
-          className="mt-1.5 w-full rounded-lg border border-[#dce3ea] bg-white px-3 py-2.5 text-sm text-[#1f2a36] outline-none transition focus:border-[#1f7a6b] focus:ring-2 focus:ring-[#1f7a6b]/20"
+          className={CAMPO}
         />
       </div>
 
@@ -58,7 +57,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={pendiente}
-        className="w-full rounded-lg bg-[#17375e] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#122c4c] disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-teal px-4 text-sm font-semibold text-white transition hover:bg-teal-dark disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pendiente ? "Entrando…" : "Entrar"}
       </button>

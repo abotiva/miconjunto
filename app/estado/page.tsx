@@ -87,7 +87,7 @@ async function probeData(): Promise<Probe> {
 function StatusDot({ ok }: { ok: boolean }) {
   return (
     <span
-      className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${ok ? "bg-emerald-500" : "bg-amber-500"}`}
+      className={`inline-block h-2 w-2 shrink-0 rounded-full ${ok ? "bg-teal" : "bg-amber-500"}`}
       aria-hidden
     />
   );
@@ -98,66 +98,67 @@ export default async function Page() {
   const allOk = auth.ok && data.ok;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-12">
-      <header className="mb-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#1f7a6b]">
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col bg-canvas px-4 py-10 sm:px-6 sm:py-12">
+      <header className="mb-8">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-teal">
           MiConjunto
         </p>
-        <h1 className="mt-3 text-3xl font-semibold text-[#17375e]">
+        <h1 className="mt-3 text-[30px] font-semibold leading-tight tracking-[-0.6px] text-navy">
           Diagnóstico de conexión
         </h1>
-        <p className="mt-2 max-w-xl text-sm text-[#5b6b7c]">
+        <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-muted">
           Esta página solo comprueba que la aplicación habla con Supabase. Todavía no
           hay módulos ni datos: es el primer eslabón del proyecto.
         </p>
       </header>
 
-      <section className="rounded-xl border border-[#dce3ea] bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between gap-4 border-b border-[#eef2f6] pb-4">
+      <section className="rounded-xl border border-line bg-surface p-6">
+        <div className="flex items-center justify-between gap-4 border-b border-line-soft pb-4">
           <div>
-            <h2 className="text-base font-semibold text-[#17375e]">Proyecto</h2>
-            <p className="mt-1 font-mono text-xs text-[#5b6b7c]">{supabaseProjectRef}</p>
+            <h2 className="text-[15px] font-semibold text-navy">Proyecto</h2>
+            <p className="mt-1 font-mono text-[11px] text-muted">{supabaseProjectRef}</p>
           </div>
           <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${
-              allOk ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${
+              allOk ? "bg-mint text-teal" : "bg-amber-50 text-amber-700"
             }`}
           >
+            <span className="h-1 w-1 rounded-full bg-current" />
             {allOk ? "Conectado" : "Revisar"}
           </span>
         </div>
 
         <dl className="mt-4 space-y-3">
           <div className="flex items-center justify-between gap-4">
-            <dt className="flex items-center gap-2 text-sm text-[#1f2a36]">
+            <dt className="flex items-center gap-2 text-[13px] text-ink">
               <StatusDot ok={auth.ok} />
               {auth.name}
             </dt>
-            <dd className="text-right font-mono text-xs text-[#5b6b7c]">{auth.detail}</dd>
+            <dd className="text-right font-mono text-[11px] text-muted">{auth.detail}</dd>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <dt className="flex items-center gap-2 text-sm text-[#1f2a36]">
+            <dt className="flex items-center gap-2 text-[13px] text-ink">
               <StatusDot ok={data.ok} />
               {data.name}
             </dt>
-            <dd className="text-right font-mono text-xs text-[#5b6b7c]">{data.detail}</dd>
+            <dd className="text-right font-mono text-[11px] text-muted">{data.detail}</dd>
           </div>
-          <div className="flex items-center justify-between gap-4 border-t border-[#eef2f6] pt-3">
-            <dt className="text-sm text-[#1f2a36]">Clave pública en uso</dt>
-            <dd className="font-mono text-xs text-[#5b6b7c]">{supabaseKey.slice(0, 16)}…</dd>
+          <div className="flex items-center justify-between gap-4 border-t border-line-soft pt-3">
+            <dt className="text-[13px] text-ink">Clave pública en uso</dt>
+            <dd className="font-mono text-[11px] text-muted">{supabaseKey.slice(0, 16)}…</dd>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <dt className="text-sm text-[#1f2a36]">URL del proyecto</dt>
-            <dd className="font-mono text-xs text-[#5b6b7c]">{supabaseUrl}</dd>
+            <dt className="text-[13px] text-ink">URL del proyecto</dt>
+            <dd className="font-mono text-[11px] text-muted">{supabaseUrl}</dd>
           </div>
         </dl>
       </section>
 
-      <section className="mt-6 rounded-xl border border-[#dce3ea] bg-white p-6">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-[#5b6b7c]">
+      <section className="mt-4 rounded-xl border border-line bg-surface p-6">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">
           Siguiente paso
         </h2>
-        <ol className="mt-3 space-y-2 text-sm text-[#1f2a36]">
+        <ol className="mt-3 space-y-2 text-[13px] leading-relaxed text-ink">
           {data.pending ? (
             <>
               <li>1. Ejecutar la migración del núcleo en el SQL Editor de Supabase.</li>
@@ -174,7 +175,7 @@ export default async function Page() {
         </ol>
       </section>
 
-      <footer className="mt-auto pt-10 text-xs text-[#5b6b7c]">
+      <footer className="mt-auto pt-10 text-[11px] text-muted">
         MiConjunto · diagnóstico generado en el servidor en cada petición
       </footer>
     </main>

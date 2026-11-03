@@ -15,6 +15,7 @@ pasarela de pagos y facturación. El módulo de cuotas fija el valor por unidad 
 | Repositorio | https://github.com/abotiva/miconjunto |
 | Supabase | proyecto `tebgroavefybadveomsr` |
 | Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.3.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.3.pdf) |
+| Diseño | [`docs/diseno/Implementacion_Mirador_v1.md`](docs/diseno/Implementacion_Mirador_v1.md) |
 
 ## Stack
 
@@ -30,7 +31,11 @@ app/
   page.tsx              redirige a /panel o /ingresar según la sesión
   ingresar/             formulario de entrada (Server Action)
   panel/                área privada, protegida por sesión y rol
+  admin/                área de plataforma (rol Admin)
   estado/               diagnóstico de conexión con Supabase
+components/
+  icons.tsx             iconografía SVG del producto
+  panel/shell.tsx       navegación lateral, topbar y menú móvil
 utils/supabase/
   env.ts                lectura validada de las variables de entorno
   server.ts             cliente para Server Components y Actions
@@ -42,6 +47,7 @@ supabase/
   scripts/              datos iniciales
 scripts/                utilidades de conexión y despliegue
 docs/propuesta/         propuesta funcional y técnica (DOCX y PDF)
+docs/diseno/            propuestas, decisión e implementación del sistema visual
 ```
 
 ## Desarrollo local

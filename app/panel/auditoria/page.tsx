@@ -1,3 +1,4 @@
+import { IconoEscudo } from "@/components/icons";
 import { createClient } from "@/utils/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -42,10 +43,14 @@ export default async function AuditoriaPage() {
   return (
     <>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-[#17375e]">
+        <p className="text-[11px] text-[#90a1ac]">
+          MiConjunto <span className="mx-1 opacity-50">/</span>
+          <span className="font-semibold text-teal">Auditoría</span>
+        </p>
+        <h1 className="mt-2 text-[26px] font-semibold leading-tight tracking-[-0.6px] text-navy">
           Accesos de soporte
         </h1>
-        <p className="mt-1 max-w-2xl text-sm text-[#5b6b7c]">
+        <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-muted">
           Cada vez que el equipo de MiConjunto necesita revisar datos del conjunto,
           debe abrir un acceso temporal con un motivo escrito. Aquí queda el
           registro completo: quién entró, cuándo, por qué y hasta cuándo.
@@ -57,64 +62,84 @@ export default async function AuditoriaPage() {
           No se pudo cargar la auditoría: {error.message}
         </p>
       ) : accesos.length === 0 ? (
-        <section className="rounded-xl border border-[#dce3ea] bg-white p-6">
-          <h2 className="text-base font-semibold text-[#17375e]">
+        <section className="rounded-xl border border-line bg-surface p-8 text-center">
+          <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-mint text-teal">
+            <IconoEscudo className="h-5 w-5" />
+          </span>
+          <h2 className="mt-3 text-[16px] font-semibold text-navy">
             Ningún acceso registrado
           </h2>
-          <p className="mt-2 text-sm text-[#5b6b7c]">
+          <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-muted">
             Nadie del equipo de la plataforma ha abierto un acceso a los datos de
             este conjunto.
           </p>
         </section>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-[#dce3ea] bg-white">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-[#f7f9fb] text-xs uppercase tracking-wide text-[#5b6b7c]">
-              <tr>
-                <th className="px-4 py-3 font-semibold">Quién</th>
-                <th className="px-4 py-3 font-semibold">Motivo</th>
-                <th className="px-4 py-3 font-semibold">Desde</th>
-                <th className="px-4 py-3 font-semibold">Hasta</th>
-                <th className="px-4 py-3 font-semibold">Estado</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#eef2f6]">
-              {accesos.map((a) => {
-                const estado = a.revocado_en
-                  ? "Cerrado antes de tiempo"
-                  : new Date(a.hasta).getTime() > ahora
-                    ? "Vigente"
-                    : "Vencido";
-                return (
-                  <tr key={a.id}>
-                    <td className="px-4 py-3">
-                      {a.perfiles?.nombres || a.perfiles?.email || "Equipo de soporte"}
-                    </td>
-                    <td className="px-4 py-3 text-[#5b6b7c]">{a.motivo}</td>
-                    <td className="px-4 py-3 text-[#5b6b7c]">
-                      {formato.format(new Date(a.desde))}
-                    </td>
-                    <td className="px-4 py-3 text-[#5b6b7c]">
-                      {formato.format(new Date(a.hasta))}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={
-                          estado === "Vigente"
-                            ? "font-semibold text-emerald-700"
-                            : estado === "Vencido"
-                              ? "text-[#5b6b7c]"
-                              : "font-semibold text-amber-700"
-                        }
-                      >
-                        {estado}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="overflow-hidden rounded-xl border border-line bg-surface">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] border-collapse text-left">
+              <thead>
+                <tr className="border-b border-line-soft bg-[#fbfcfd] text-[10px] uppercase tracking-[0.1em] text-[#8a9ba7]">
+                  <th className="px-5 py-2.5 font-semibold">Quién</th>
+                  <th className="px-5 py-2.5 font-semibold">Motivo</th>
+                  <th className="px-5 py-2.5 font-semibold">Desde</th>
+                  <th className="px-5 py-2.5 font-semibold">Hasta</th>
+                  <th className="px-5 py-2.5 font-semibold">Estado</th>
+                </tr>
+              </thead>
+              <tbody className="leading-snug">
+                {accesos.map((a) => {
+                  const vigente =
+                    !a.revocado_en && new Date(a.hasta).getTime() > ahora;
+                  const estado = a.revocado_en
+                    ? "Cerrado antes de tiempo"
+                    : vigente
+                      ? "Vigente"
+                      : "Vencido";
+
+                  return (
+                    <tr
+                      key={a.id}
+                      className="border-b border-line-soft transition last:border-0 hover:bg-canvas/60"
+                    >
+                      <td className="px-5 py-2.5 text-[12px] font-medium text-navy">
+                        {a.perfiles?.nombres ||
+                          a.perfiles?.email ||
+                          "Equipo de soporte"}
+                      </td>
+                      <td className="max-w-[320px] px-5 py-2.5 text-[12px] leading-relaxed text-[#3e5563]">
+                        {a.motivo}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-2.5 text-[12px] tabular-nums text-muted">
+                        {formato.format(new Date(a.desde))}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-2.5 text-[12px] tabular-nums text-muted">
+                        {formato.format(new Date(a.hasta))}
+                      </td>
+                      <td className="px-5 py-2.5">
+                        <span
+                          className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                            vigente
+                              ? "bg-mint text-teal"
+                              : estado === "Cerrado antes de tiempo"
+                                ? "bg-[#fff3e4] text-[#b26a18]"
+                                : "bg-canvas text-muted"
+                          }`}
+                        >
+                          <span className="h-1 w-1 rounded-full bg-current" />
+                          {estado}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="border-t border-line-soft px-5 py-2.5 text-[11px] text-muted">
+            {accesos.length} {accesos.length === 1 ? "acceso registrado" : "accesos registrados"}
+          </div>
         </div>
       )}
     </>

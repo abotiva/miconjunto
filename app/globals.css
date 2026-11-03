@@ -1,21 +1,65 @@
 @import "tailwindcss";
 
-:root {
-  --navy: #17375e;
-  --teal: #1f7a6b;
-  --ink: #1f2a36;
-  --muted: #5b6b7c;
-  --line: #dce3ea;
+/*
+  Sistema Mirador · base del producto.
+  Los seis colores originales (navy, teal, ink, muted, line, fondo) se conservan
+  como marca; aquí se nombran y se completan con los acentos cálidos de Patio,
+  reservados para las pantallas del residente y el ingreso.
+*/
+@theme {
+  --color-canvas: #f4f7f8;
+  --color-surface: #ffffff;
+  --color-navy: #12324b;
+  --color-teal: #0e7a6b;
+  --color-teal-dark: #0b6357;
+  --color-mint: #edf6f3;
+  --color-ink: #1d2b36;
+  --color-muted: #5f7280;
+  --color-line: #e2e9ee;
+  --color-line-soft: #f0f4f6;
+
+  --color-warm: #f3ede3;
+  --color-warm-surface: #fffcf6;
+  --color-warm-ink: #2b2521;
+  --color-warm-muted: #6b5d51;
+  --color-terracotta: #b44e2b;
+
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui,
+    -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-warm: Georgia, "Times New Roman", serif;
 }
 
-html,
-body {
-  height: 100%;
-}
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
 
-body {
-  background: #f6f8fa;
-  color: var(--ink);
-  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: var(--color-teal);
+    color: #fff;
+  }
+
+  :where(a, button, summary, input, select, textarea):focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 2px;
+  }
+
+  summary {
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
 }
