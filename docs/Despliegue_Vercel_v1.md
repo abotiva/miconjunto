@@ -44,6 +44,12 @@ Vercel construye y publica. El estado se ve en el panel y con:
 npx vercel ls miconjunto
 ```
 
+Vercel también reporta el resultado en GitHub: el commit queda con el estado
+`Vercel · success` o `failure` y un enlace al despliegue.
+
+**Verificado:** el 4 de noviembre de 2026, el push de `416be37` a `main` produjo
+un despliegue de producción en ~50 s y el estado del commit quedó en `success`.
+
 ### Manual, desde el equipo
 
 ```powershell

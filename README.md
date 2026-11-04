@@ -65,6 +65,20 @@ npm run check:supabase
 Variables de entorno: copiar `.env.local.example` a `.env.local` y completar.
 El archivo `.env.local` está en `.gitignore` y nunca se sube.
 
+## Despliegue
+
+Cada push a `main` publica en producción (<https://miconjunto-rose.vercel.app>) y
+deja el estado del commit en GitHub; las ramas y pull requests generan una vista
+previa con URL propia. También se puede publicar a mano:
+
+```powershell
+npm run deploy:preview   # revisión, no toca producción
+npm run deploy           # producción
+```
+
+Variables, rollback y exclusiones en
+[`docs/Despliegue_Vercel_v1.md`](docs/Despliegue_Vercel_v1.md).
+
 ## Base de datos
 
 Las migraciones se ejecutan a mano en Supabase → SQL Editor, en orden:
