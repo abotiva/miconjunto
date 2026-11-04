@@ -16,6 +16,7 @@ pasarela de pagos y facturación. El módulo de cuotas fija el valor por unidad 
 | Supabase | proyecto `tebgroavefybadveomsr` |
 | Propuesta | [`docs/propuesta/Propuesta_MiConjunto_v1.3.pdf`](docs/propuesta/Propuesta_MiConjunto_v1.3.pdf) |
 | Diseño | [`docs/diseno/Implementacion_Mirador_v1.md`](docs/diseno/Implementacion_Mirador_v1.md) |
+| Despliegue | [`docs/Despliegue_Vercel_v1.md`](docs/Despliegue_Vercel_v1.md) |
 
 ## Stack
 
@@ -28,13 +29,15 @@ pasarela de pagos y facturación. El módulo de cuotas fija el valor por unidad 
 
 ```
 app/
-  page.tsx              redirige a /panel o /ingresar según la sesión
+  page.tsx              página de inicio pública (estática)
   ingresar/             formulario de entrada (Server Action)
   panel/                área privada, protegida por sesión y rol
   admin/                área de plataforma (rol Admin)
   estado/               diagnóstico de conexión con Supabase
+  layout.tsx            metadatos y base tipográfica
 components/
   icons.tsx             iconografía SVG del producto
+  landing/              inicio: cabecera, vista previa y tarjetas por rol
   panel/shell.tsx       navegación lateral, topbar y menú móvil
 utils/supabase/
   env.ts                lectura validada de las variables de entorno

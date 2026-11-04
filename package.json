@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check:supabase": "node scripts/check-supabase.mjs"
+    "check:supabase": "node scripts/check-supabase.mjs",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel deploy"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
