@@ -94,6 +94,16 @@ Promover no congela nada: el siguiente push a `main` vuelve a publicar. Y como
 el alias es estable, ninguna de las dos rutas cambia la dirección de los
 residentes.
 
+> **Las vistas previas están protegidas.** El proyecto tiene activa la
+> *Deployment Protection* de Vercel, así que una URL de vista previa responde
+> con la pantalla de inicio de sesión de Vercel a quien no tenga sesión
+> iniciada. Comprobado el 4 de noviembre de 2026: abrir
+> `https://miconjunto-gl0q4534i-motocare.vercel.app` sin sesión devuelve
+> `Login - Vercel`, no la aplicación. Para revisar alcanza con entrar con la
+> cuenta del proyecto; para enseñársela a alguien de fuera hay que cambiar esa
+> protección en *Settings → Deployment Protection* o publicar en producción.
+> Producción no está protegida.
+
 > **Aviso:** las vistas previas usan las mismas variables de Supabase que
 > producción, es decir, **la misma base de datos**. Sirven para revisar diseño y
 > lectura; no se prueban ahí borrados, cambios de rol ni nada destructivo.
