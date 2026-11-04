@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>MiConjunto · imagen para compartir enlaces</title>
+    <style>
+      /*
+        Fuente de verdad de app/opengraph-image.png (1200 × 630).
+        Se renderiza sin red, con las tipografías del sistema:
+        Georgia para el titular y Segoe UI para el resto.
+      */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #f4f7f8;
+        color: #1d2b36;
+        font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, Arial,
+          sans-serif;
+        font-variant-numeric: tabular-nums;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .lienzo {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 44px;
+        width: 100%;
+        height: 100%;
+        padding: 0 56px 0 64px;
+        background:
+          radial-gradient(
+            68% 74% at 92% -6%,
+            rgba(14, 122, 107, 0.14),
+            transparent 62%
+          ),
+          radial-gradient(
+            52% 60% at 4% 104%,
+            rgba(180, 78, 43, 0.09),
+            transparent 60%
+          ),
+          linear-gradient(180deg, #f7fafb 0%, #f2f6f7 100%);
+      }
+
+      .lienzo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgba(18, 50, 75, 0.1);
+        pointer-events: none;
+      }
+
+      /* Columna editorial */
+      .texto {
+        position: relative;
+        z-index: 2;
+        flex: 1 1 auto;
+        min-width: 0;
+        padding-bottom: 4px;
+      }
+
+      .marca {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .marca-icono {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        background: #0e7a6b;
+        color: #ffffff;
+        box-shadow: 0 6px 14px -6px rgba(14, 122, 107, 0.65);
+      }
+
+      .marca-nombre {
+        font-size: 21px;
+        font-weight: 600;
+        letter-spacing: -0.4px;
+        line-height: 1;
+        color: #12324b;
+      }
+
+      .marca-lema {
+        margin-top: 5px;
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.19em;
+        text-transform: uppercase;
+        color: #5f7280;
+      }
+
+      h1 {
+        margin-top: 30px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 70px;
+        font-weight: 400;
+        line-height: 1.03;
+        letter-spacing: -1.7px;
+        color: #12324b;
+      }
+
+      .subrayado {
+        position: relative;
+        display: inline-block;
+      }
+
+      .subrayado::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 2px;
+        bottom: 4px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(180, 78, 43, 0.28);
+      }
+
+      .entrada {
+        margin-top: 22px;
+        max-width: 40ch;
+        font-size: 18px;
+        line-height: 1.5;
+        color: #5f7280;
+      }
+
+      .roles {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-top: 26px;
+      }
+
+      .rol {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 13px;
+        border: 1px solid #dde6ea;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #12324b;
+      }
+
+      .punto {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+      }
+
+      .punto-admin {
+        background: #0e7a6b;
+      }
+
+      .punto-porteria {
+        background: #12324b;
+      }
+
+      .punto-residente {
+        background: #b44e2b;
+      }
+
+      /* Tarjeta de ejemplo */
+      .panel {
+        position: relative;
+        z-index: 2;
+        flex: 0 0 452px;
+        border: 1px solid #e2e9ee;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow: 0 34px 64px -46px rgba(18, 50, 75, 0.6);
+        overflow: hidden;
+      }
+
+      .panel-barra {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 11px 16px;
+        border-bottom: 1px solid #f0f4f6;
+        background: rgba(240, 244, 246, 0.5);
+      }
+
+      .ventana {
+        display: flex;
+        gap: 5px;
+      }
+
+      .ventana i {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #d8e0e5;
+      }
+
+      .panel-titulo {
+        font-size: 10.5px;
+        font-weight: 500;
+        color: #5f7280;
+        white-space: nowrap;
+      }
+
+      .sello {
+        padding: 3px 8px;
+        border: 1px solid #e2e9ee;
+        border-radius: 999px;
+        font-size: 8.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #5f7280;
+        white-space: nowrap;
+      }
+
+      .panel-cuerpo {
+        padding: 16px;
+      }
+
+      .cifras {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+      }
+
+      .cifra {
+        padding: 10px 11px;
+        border: 1px solid #f0f4f6;
+        border-radius: 11px;
+        background: rgba(244, 247, 248, 0.75);
+      }
+
+      .cifra-etiqueta {
+        font-size: 8.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #5f7280;
+      }
+
+      .cifra-valor {
+        margin-top: 5px;
+        font-size: 26px;
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: -0.6px;
+        color: #12324b;
+      }
+
+      .grafico {
+        margin-top: 10px;
+        padding: 12px 13px;
+        border: 1px solid #f0f4f6;
+        border-radius: 11px;
+      }
+
+      .grafico-encabezado {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
+
+      .grafico-titulo {
+        font-size: 8.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #5f7280;
+      }
+
+      .grafico-total {
+        font-size: 8.5px;
+        color: #5f7280;
+      }
+
+      .barras {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 62px;
+        margin-top: 12px;
+      }
+
+      .barras span {
+        flex: 1;
+        border-radius: 3px 3px 0 0;
+        background: rgba(14, 122, 107, 0.18);
+      }
+
+      .barras span.destacada {
+        background: #0e7a6b;
+      }
+
+      .barras-etiquetas {
+        display: flex;
+        gap: 8px;
+        margin-top: 5px;
+      }
+
+      .barras-etiquetas span {
+        flex: 1;
+        text-align: center;
+        font-size: 8.5px;
+        color: #5f7280;
+      }
+
+      .tabla {
+        margin-top: 10px;
+        border: 1px solid #f0f4f6;
+        border-radius: 11px;
+        overflow: hidden;
+      }
+
+      .fila {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 13px;
+        border-bottom: 1px solid #f0f4f6;
+        font-size: 11px;
+      }
+
+      .fila:last-child {
+        border-bottom: 0;
+      }
+
+      .fila-izquierda {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .chip {
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #edf6f3;
+        font-size: 8.5px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #0e7a6b;
+      }
+
+      .unidad {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #12324b;
+      }
+
+      .coeficiente {
+        font-size: 10.5px;
+        color: #5f7280;
+      }
+
+      /* Pie */
+      .pie {
+        position: absolute;
+        left: 64px;
+        right: 56px;
+        bottom: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 10px;
+        letter-spacing: 0.02em;
+        color: #7d8f9b;
+      }
+
+      .pie-separador {
+        width: 18px;
+        height: 1px;
+        background: #cbd8de;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lienzo">
+      <div class="texto">
+        <div class="marca">
+          <span class="marca-icono">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19v-8.5Z"
+                stroke="#ffffff"
+                stroke-width="1.7"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9.5 20.5v-6h5v6"
+                stroke="#ffffff"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <span>
+            <span class="marca-nombre">MiConjunto</span>
+            <span class="marca-lema">Administración</span>
+          </span>
+        </div>
+
+        <h1>
+          El conjunto,<br />
+          <span class="subrayado">en orden.</span>
+        </h1>
+
+        <p class="entrada">
+          Unidades, portería y cuotas en un solo lugar. Cada rol ve solo lo
+          que le corresponde.
+        </p>
+
+        <div class="roles">
+          <span class="rol"><i class="punto punto-admin"></i>Administración</span>
+          <span class="rol"><i class="punto punto-porteria"></i>Portería</span>
+          <span class="rol"><i class="punto punto-residente"></i>Residentes</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-barra">
+          <div class="ventana"><i></i><i></i><i></i></div>
+          <p class="panel-titulo">Altos del Nogal · Administración</p>
+          <span class="sello">Ejemplo</span>
+        </div>
+
+        <div class="panel-cuerpo">
+          <div class="cifras">
+            <div class="cifra">
+              <p class="cifra-etiqueta">Unidades</p>
+              <p class="cifra-valor">128</p>
+            </div>
+            <div class="cifra">
+              <p class="cifra-etiqueta">Personas</p>
+              <p class="cifra-valor">342</p>
+            </div>
+            <div class="cifra">
+              <p class="cifra-etiqueta">Torres</p>
+              <p class="cifra-valor">6</p>
+            </div>
+          </div>
+
+          <div class="grafico">
+            <div class="grafico-encabezado">
+              <p class="grafico-titulo">Unidades por torre</p>
+              <p class="grafico-total">128 en total</p>
+            </div>
+            <div class="barras">
+              <span style="height: 92%"></span>
+              <span style="height: 85%"></span>
+              <span class="destacada" style="height: 100%"></span>
+              <span style="height: 69%"></span>
+              <span style="height: 77%"></span>
+              <span style="height: 69%"></span>
+            </div>
+            <div class="barras-etiquetas">
+              <span>A</span><span>B</span><span>C</span><span>D</span
+              ><span>E</span><span>F</span>
+            </div>
+          </div>
+
+          <div class="tabla">
+            <div class="fila">
+              <span class="fila-izquierda">
+                <span class="chip">Torre A</span>
+                <span class="unidad">302</span>
+              </span>
+              <span class="coeficiente">0,86 %</span>
+            </div>
+            <div class="fila">
+              <span class="fila-izquierda">
+                <span class="chip">Torre C</span>
+                <span class="unidad">101</span>
+              </span>
+              <span class="coeficiente">0,79 %</span>
+            </div>
+            <div class="fila">
+              <span class="fila-izquierda">
+                <span class="chip">Torre F</span>
+                <span class="unidad">204</span>
+              </span>
+              <span class="coeficiente">0,94 %</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pie">
+        <span>Roles separados · Permisos con RLS · Soporte auditado</span>
+        <span class="pie-separador"></span>
+        <span>Hecho en Colombia</span>
+      </div>
+    </div>
+  </body>
+</html>
