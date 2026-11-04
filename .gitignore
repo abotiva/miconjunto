@@ -21,6 +21,9 @@ tmp/
 Thumbs.db
 *.log
 
+# Artefactos de TypeScript
+tsconfig.tsbuildinfo
+
 # Carpeta ajena de un intento anterior
 Conjunto_Residencial/
 

@@ -12,6 +12,7 @@
   --color-navy: #12324b;
   --color-teal: #0e7a6b;
   --color-teal-dark: #0b6357;
+  --color-on-teal: #ffffff;
   --color-mint: #edf6f3;
   --color-ink: #1d2b36;
   --color-muted: #5f7280;
@@ -29,6 +30,46 @@
   --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui,
     -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-warm: Georgia, "Times New Roman", serif;
+}
+
+/*
+  Temas por rol. Los tokens se redefinen dentro del shell, así que los mismos
+  componentes (`bg-surface`, `text-navy`, `bg-mint`…) cambian de contraste sin
+  duplicar clases: claro para administración, operación para portería y cálido
+  para el residente.
+*/
+[data-tema="operacion"] {
+  color-scheme: dark;
+
+  --color-canvas: #081924;
+  --color-surface: #0e2735;
+  --color-navy: #eaf3f6;
+  --color-teal: #2fbfa6;
+  --color-teal-dark: #24a58f;
+  --color-on-teal: #06201d;
+  --color-mint: #123c4a;
+  --color-ink: #d9e6ec;
+  --color-muted: #93aab8;
+  --color-line: #1c4052;
+  --color-line-soft: #163444;
+  --color-warm: #0b202c;
+  --color-warm-surface: #0e2735;
+  --color-warm-ink: #eaf3f6;
+  --color-warm-muted: #93aab8;
+  --color-terracotta: #e08a63;
+}
+
+[data-tema="calido"] {
+  --color-canvas: #f3ede3;
+  --color-surface: #fffcf6;
+  --color-navy: #2b2521;
+  --color-teal: #b44e2b;
+  --color-teal-dark: #93391d;
+  --color-mint: #f8efe3;
+  --color-ink: #2b2521;
+  --color-muted: #6b5d51;
+  --color-line: #e7dccb;
+  --color-line-soft: #f0e8db;
 }
 
 @layer base {

@@ -140,7 +140,7 @@ Todas con `conjunto_id`, RLS por rol y trazabilidad de quién creó y quién cam
 
 ## Orden recomendado para implementar
 
-1. **Shell por rol** (esta semana): la navegación cambia según `perfiles.rol`. Es barato y evita que un residente vea módulos de administración.
+1. **Shell por rol** (esta semana): la navegación cambia según `perfiles.rol`. Es barato y evita que un residente vea módulos de administración. **Implementado** — ver [`Shell_Por_Rol_v1.md`](Shell_Por_Rol_v1.md).
 2. **Portería**: `visitas`, `paquetes` y `novedades`. Es el módulo con más dolor operativo y el que justifica la pantalla oscura.
 3. **Residente**: cuota del mes y comunicados, en ese orden. Con esos dos, el inicio cálido ya se sostiene.
 4. **Cuotas y reservas** para administración, que a su vez devuelven al panel su gráfico principal.

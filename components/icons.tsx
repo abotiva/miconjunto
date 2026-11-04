@@ -166,3 +166,68 @@ export function IconoSalir(props: IconoProps) {
     </Base>
   );
 }
+
+export function IconoBuscar(props: IconoProps) {
+  return (
+    <Base {...props}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </Base>
+  );
+}
+
+export function IconoReloj(props: IconoProps) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </Base>
+  );
+}
+
+export function IconoPaquete(props: IconoProps) {
+  return (
+    <Base {...props}>
+      <path d="m21 8-9-5-9 5v8l9 5 9-5Z" />
+      <path d="m3 8 9 5 9-5" />
+      <path d="M12 13v8" />
+    </Base>
+  );
+}
+
+export function IconoAlerta(props: IconoProps) {
+  return (
+    <Base {...props}>
+      <path d="M12 9v4" />
+      <path d="M12 17h.01" />
+      <path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+    </Base>
+  );
+}
+
+export function IconoVehiculo(props: IconoProps) {
+  return (
+    <Base {...props}>
+      <path d="M5 17h14l-1.5-6.5A2 2 0 0 0 15.6 9H8.4a2 2 0 0 0-1.9 1.5L5 17Z" />
+      <circle cx="7.5" cy="19" r="1.5" />
+      <circle cx="16.5" cy="19" r="1.5" />
+    </Base>
+  );
+}
+
+export function IconoMascota(props: IconoProps) {
+  return (
+    <Base {...props}>
+      <path d="M11 20c-3 0-5-2-5-5 0-4 4-7 6-9 2 2 6 5 6 9 0 3-2 5-5 5Z" />
+      <path d="M9 12h.01M13 12h.01" />
+    </Base>
+  );
+}
+
+export function IconoTelefono(props: IconoProps) {
+  return (
+    <Base {...props}>
+      <path d="M5 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L15 13l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
+    </Base>
+  );
+}

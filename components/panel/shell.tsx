@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ComponentType, type ReactNode } from "react";
 
 import {
-  IconoCerrar,
+  IconoAlerta,
   IconoCalendario,
+  IconoCasa,
+  IconoCerrar,
   IconoEdificio,
   IconoEscudo,
   IconoMegafono,
@@ -14,13 +16,19 @@ import {
   IconoMenu,
   IconoMoneda,
   IconoPanel,
+  IconoPaquete,
   IconoPuerta,
   IconoSalir,
+  IconoTelefono,
   IconoUsuarios,
-  IconoCasa,
+  IconoVehiculo,
 } from "@/components/icons";
 
 type Icono = ComponentType<{ className?: string }>;
+
+export type RolApp = "administracion" | "porteria" | "residente";
+
+type Tema = "claro" | "operacion" | "calido";
 
 type ItemNav = {
   href: string;
@@ -33,7 +41,9 @@ type ItemNav = {
 type ConjuntoShell = {
   nombre: string;
   ciudad: string | null;
+  telefono: string | null;
   unidades: number;
+  unidad: string | null;
 };
 
 type UsuarioShell = {
@@ -42,16 +52,34 @@ type UsuarioShell = {
   rol: string;
 };
 
+const TEMA: Record<RolApp, Tema> = {
+  administracion: "claro",
+  porteria: "operacion",
+  residente: "calido",
+};
+
+const SUBTITULO: Record<RolApp, string> = {
+  administracion: "Administración",
+  porteria: "Portería",
+  residente: "Residente",
+};
+
 function iniciales(nombre: string) {
   const partes = nombre.trim().split(/\s+/).filter(Boolean);
   if (partes.length === 0) return "MC";
   return (partes[0][0] + (partes[1]?.[0] ?? "")).toUpperCase();
 }
 
-function Marca({ compacta = false }: { compacta?: boolean }) {
+function Marca({
+  compacta = false,
+  rol,
+}: {
+  compacta?: boolean;
+  rol: RolApp | null;
+}) {
   return (
     <div className="flex items-center gap-2.5">
-      <span className="grid h-9 w-9 flex-none place-items-center rounded-[9px] bg-teal text-white shadow-[0_4px_10px_-4px_rgba(14,122,107,0.5)]">
+      <span className="grid h-9 w-9 flex-none place-items-center rounded-[9px] bg-teal text-on-teal shadow-[0_4px_10px_-4px_rgba(14,122,107,0.5)]">
         <IconoCasa className="h-[18px] w-[18px]" />
       </span>
       <div className="min-w-0">
@@ -60,12 +88,118 @@ function Marca({ compacta = false }: { compacta?: boolean }) {
         </p>
         {compacta ? null : (
           <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.19em] text-muted">
-            Administración
+            {rol ? SUBTITULO[rol] : "Sin rol"}
           </p>
         )}
       </div>
     </div>
   );
+}
+
+function gruposDeRol(
+  rol: RolApp | null,
+  conjunto: ConjuntoShell,
+): { titulo: string; items: ItemNav[] }[] {
+  if (rol === "porteria") {
+    return [
+      {
+        titulo: "Turno",
+        items: [
+          { href: "/panel", label: "Bitácora", Icono: IconoPanel, listo: true },
+          { href: "/panel/visitas", label: "Visitas", Icono: IconoPuerta },
+          { href: "/panel/paqueteria", label: "Paquetería", Icono: IconoPaquete },
+          { href: "/panel/novedades", label: "Novedades", Icono: IconoAlerta },
+        ],
+      },
+      {
+        titulo: "Conjunto",
+        items: [
+          {
+            href: "/panel/unidades",
+            label: "Unidades",
+            Icono: IconoEdificio,
+            listo: true,
+            contador: conjunto.unidades || undefined,
+          },
+          {
+            href: "/panel/directorio",
+            label: "Directorio",
+            Icono: IconoUsuarios,
+            listo: true,
+          },
+          { href: "/panel/vehiculos", label: "Vehículos", Icono: IconoVehiculo },
+        ],
+      },
+    ];
+  }
+
+  if (rol === "residente") {
+    return [
+      {
+        titulo: "Mi hogar",
+        items: [
+          { href: "/panel", label: "Inicio", Icono: IconoPanel, listo: true },
+          {
+            href: "/panel/mi-unidad",
+            label: "Mi unidad",
+            Icono: IconoCasa,
+            listo: true,
+          },
+          { href: "/panel/cuotas", label: "Cuotas", Icono: IconoMoneda },
+          { href: "/panel/reservas", label: "Reservas", Icono: IconoCalendario },
+        ],
+      },
+      {
+        titulo: "Comunidad",
+        items: [
+          { href: "/panel/comunicados", label: "Comunicados", Icono: IconoMegafono },
+          { href: "/panel/pqrs", label: "PQRS", Icono: IconoMensaje },
+          { href: "/panel/asambleas", label: "Asambleas", Icono: IconoUsuarios },
+        ],
+      },
+    ];
+  }
+
+  if (rol === "administracion") {
+    return [
+      {
+        titulo: "Gestión",
+        items: [
+          { href: "/panel", label: "Panel", Icono: IconoPanel, listo: true },
+          {
+            href: "/panel/unidades",
+            label: "Unidades",
+            Icono: IconoEdificio,
+            listo: true,
+            contador: conjunto.unidades || undefined,
+          },
+          { href: "/panel/reservas", label: "Reservas", Icono: IconoCalendario },
+          { href: "/panel/pqrs", label: "PQRS", Icono: IconoMensaje },
+        ],
+      },
+      {
+        titulo: "Comunidad",
+        items: [
+          { href: "/panel/comunicados", label: "Comunicados", Icono: IconoMegafono },
+          { href: "/panel/asambleas", label: "Asambleas", Icono: IconoUsuarios },
+          { href: "/panel/cuotas", label: "Cuotas", Icono: IconoMoneda },
+        ],
+      },
+      {
+        titulo: "Control",
+        items: [
+          {
+            href: "/panel/auditoria",
+            label: "Auditoría",
+            Icono: IconoEscudo,
+            listo: true,
+          },
+        ],
+      },
+    ];
+  }
+
+  return [];
 }
 
 function NavList({
@@ -81,7 +215,7 @@ function NavList({
     <>
       {grupos.map((grupo) => (
         <div key={grupo.titulo} className="mb-5 last:mb-0">
-          <p className="px-2.5 pb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#93a3ae]">
+          <p className="px-2.5 pb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted/80">
             {grupo.titulo}
           </p>
           <ul className="space-y-0.5">
@@ -89,7 +223,7 @@ function NavList({
               const activo =
                 item.href === "/panel"
                   ? pathname === "/panel"
-                  : pathname.startsWith(item.href);
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
               const Icono = item.Icono;
 
               if (!item.listo) {
@@ -98,11 +232,11 @@ function NavList({
                     <span
                       aria-disabled="true"
                       title="Disponible en la siguiente fase"
-                      className="flex h-9 cursor-default items-center gap-2.5 rounded-lg px-2.5 text-[13px] text-[#9aa8b6]"
+                      className="flex h-9 cursor-default items-center gap-2.5 rounded-lg px-2.5 text-[13px] text-muted/60"
                     >
-                      <Icono className="h-4 w-4 flex-none text-[#a9b6c1]" />
+                      <Icono className="h-4 w-4 flex-none text-muted/50" />
                       <span className="truncate">{item.label}</span>
-                      <span className="ml-auto rounded bg-canvas px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-[#8a99a8]">
+                      <span className="ml-auto rounded bg-canvas px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-muted">
                         pronto
                       </span>
                     </span>
@@ -119,11 +253,11 @@ function NavList({
                     className={`relative flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-[13px] transition ${
                       activo
                         ? "bg-mint font-semibold text-teal before:absolute before:-left-4 before:top-2 before:bottom-2 before:w-[3px] before:rounded-r before:bg-teal"
-                        : "text-[#4e6270] hover:bg-canvas hover:text-navy"
+                        : "text-muted hover:bg-canvas hover:text-navy"
                     }`}
                   >
                     <Icono
-                      className={`h-4 w-4 flex-none ${activo ? "text-teal" : "text-[#7e919e]"}`}
+                      className={`h-4 w-4 flex-none ${activo ? "text-teal" : "text-muted/70"}`}
                     />
                     <span className="truncate">{item.label}</span>
                     {item.contador ? (
@@ -145,7 +279,7 @@ function NavList({
 function EstadoUsuario({ usuario }: { usuario: UsuarioShell }) {
   return (
     <div className="flex items-center gap-2.5 border-t border-line pt-4">
-      <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-gradient-to-br from-[#3c7e93] to-[#1f4c63] text-[11px] font-semibold text-white">
+      <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-gradient-to-br from-teal to-teal-dark text-[11px] font-semibold text-white">
         {iniciales(usuario.nombre)}
       </span>
       <div className="min-w-0">
@@ -156,12 +290,54 @@ function EstadoUsuario({ usuario }: { usuario: UsuarioShell }) {
   );
 }
 
+function NotaDeRol({
+  rol,
+  conjunto,
+}: {
+  rol: RolApp | null;
+  conjunto: ConjuntoShell;
+}) {
+  if (rol === "porteria") {
+    return (
+      <div className="mb-3 flex items-center gap-2.5 rounded-lg border border-line bg-canvas/60 px-2.5 py-2">
+        <span className="grid h-6 w-6 flex-none place-items-center rounded-md bg-mint text-teal">
+          <IconoPuerta className="h-3.5 w-3.5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold text-navy">Modo operación</p>
+          <p className="truncate text-[10px] text-muted">Alto contraste · turno activo</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (rol === "residente") {
+    return (
+      <div className="mb-3 flex items-center gap-2.5 rounded-lg border border-line bg-canvas/60 px-2.5 py-2">
+        <span className="grid h-6 w-6 flex-none place-items-center rounded-md bg-mint text-teal">
+          <IconoTelefono className="h-3.5 w-3.5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold text-navy">Portería 24 horas</p>
+          <p className="truncate text-[10px] text-muted">
+            {conjunto.telefono ?? "Consulta con la administración"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 export function PanelShell({
+  rol,
   conjunto,
   usuario,
   salir,
   children,
 }: {
+  rol: RolApp | null;
   conjunto: ConjuntoShell;
   usuario: UsuarioShell;
   salir: () => Promise<void>;
@@ -170,43 +346,18 @@ export function PanelShell({
   const pathname = usePathname();
   const [menuAbierto, setMenuAbierto] = useState(false);
 
-  const grupos: { titulo: string; items: ItemNav[] }[] = [
-    {
-      titulo: "Gestión",
-      items: [
-        { href: "/panel", label: "Panel", Icono: IconoPanel, listo: true },
-        {
-          href: "/panel/unidades",
-          label: "Unidades",
-          Icono: IconoEdificio,
-          listo: true,
-          contador: conjunto.unidades || undefined,
-        },
-        { href: "/panel/porteria", label: "Portería", Icono: IconoPuerta },
-        { href: "/panel/reservas", label: "Reservas", Icono: IconoCalendario },
-        { href: "/panel/pqrs", label: "PQRS", Icono: IconoMensaje },
-      ],
-    },
-    {
-      titulo: "Comunidad",
-      items: [
-        { href: "/panel/comunicados", label: "Comunicados", Icono: IconoMegafono },
-        { href: "/panel/asambleas", label: "Asambleas", Icono: IconoUsuarios },
-        { href: "/panel/cuotas", label: "Cuotas", Icono: IconoMoneda },
-      ],
-    },
-    {
-      titulo: "Control",
-      items: [
-        {
-          href: "/panel/auditoria",
-          label: "Auditoría",
-          Icono: IconoEscudo,
-          listo: true,
-        },
-      ],
-    },
-  ];
+  const grupos = gruposDeRol(rol, conjunto);
+  const tema: Tema = rol ? TEMA[rol] : "claro";
+
+  const ubicacion = [conjunto.ciudad, `${conjunto.unidades} unidades`]
+    .filter(Boolean)
+    .join(" · ");
+
+  const tituloConjunto = rol === "residente" ? (conjunto.unidad ?? conjunto.nombre) : conjunto.nombre;
+  const detalleConjunto =
+    rol === "residente"
+      ? [conjunto.nombre, conjunto.ciudad].filter(Boolean).join(" · ")
+      : ubicacion || "Sin unidades registradas";
 
   useEffect(() => {
     setMenuAbierto(false);
@@ -226,12 +377,8 @@ export function PanelShell({
     };
   }, [menuAbierto]);
 
-  const ubicacion = [conjunto.ciudad, `${conjunto.unidades} unidades`]
-    .filter(Boolean)
-    .join(" · ");
-
   return (
-    <div className="min-h-screen bg-canvas">
+    <div data-tema={tema} className="min-h-screen bg-canvas">
       <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur lg:hidden">
         <button
           type="button"
@@ -242,27 +389,25 @@ export function PanelShell({
         >
           <IconoMenu className="h-4 w-4" />
         </button>
-        <Marca compacta />
+        <Marca compacta rol={rol} />
         <span className="ml-auto max-w-[42%] truncate text-[11px] text-muted">
-          {conjunto.nombre}
+          {tituloConjunto}
         </span>
       </header>
 
       <div className="flex">
         <aside className="sticky top-0 hidden h-screen w-[264px] flex-none flex-col border-r border-line bg-surface px-4 py-6 lg:flex">
-          <Marca />
+          <Marca rol={rol} />
 
-          <div className="mt-5 flex items-center gap-2.5 rounded-[10px] border border-line bg-[#fcfdfd] px-2.5 py-2.5">
+          <div className="mt-5 flex items-center gap-2.5 rounded-[10px] border border-line bg-canvas/60 px-2.5 py-2.5">
             <span className="grid h-7 w-7 flex-none place-items-center rounded-md bg-mint text-teal">
               <IconoEdificio className="h-3.5 w-3.5" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate text-[12px] font-semibold leading-tight text-navy">
-                {conjunto.nombre}
+                {tituloConjunto}
               </p>
-              <p className="mt-0.5 truncate text-[10px] text-muted">
-                {ubicacion || "Sin unidades registradas"}
-              </p>
+              <p className="mt-0.5 truncate text-[10px] text-muted">{detalleConjunto}</p>
             </div>
           </div>
 
@@ -271,6 +416,7 @@ export function PanelShell({
           </nav>
 
           <div className="mt-4">
+            <NotaDeRol rol={rol} conjunto={conjunto} />
             <EstadoUsuario usuario={usuario} />
           </div>
         </aside>
@@ -324,7 +470,7 @@ export function PanelShell({
           />
           <div className="relative flex h-full w-[280px] max-w-[85%] flex-col border-r border-line bg-surface px-4 py-5 shadow-2xl">
             <div className="flex items-center justify-between gap-2">
-              <Marca />
+              <Marca rol={rol} />
               <button
                 type="button"
                 onClick={() => setMenuAbierto(false)}
@@ -348,7 +494,9 @@ export function PanelShell({
               />
             </nav>
 
-            <form action={salir} className="mt-4 border-t border-line pt-4">
+            <NotaDeRol rol={rol} conjunto={conjunto} />
+
+            <form action={salir} className="border-t border-line pt-4">
               <button
                 type="submit"
                 className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-line text-[12px] font-semibold text-navy transition hover:border-navy"

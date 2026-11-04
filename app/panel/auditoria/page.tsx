@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { IconoEscudo } from "@/components/icons";
 import { createClient } from "@/utils/supabase/server";
 
@@ -29,6 +31,9 @@ export default async function AuditoriaPage() {
     .select("conjunto_id, rol")
     .eq("id", user!.id)
     .maybeSingle();
+
+  // La auditoría es parte del gobierno del conjunto, no de la operación.
+  if (perfil?.rol !== "administracion") redirect("/panel");
 
   const { data, error } = await supabase
     .from("accesos_soporte")

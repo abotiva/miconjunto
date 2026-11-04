@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { IconoEdificio, IconoMas } from "@/components/icons";
 import { createClient } from "@/utils/supabase/server";
 
@@ -22,13 +24,13 @@ const ERRORES: Record<string, string> = {
 };
 
 const CAMPO =
-  "mt-1.5 w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition placeholder:text-[#9aa8b6] focus:border-teal focus:ring-2 focus:ring-teal/20";
+  "mt-1.5 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition placeholder:text-muted/70 focus:border-teal focus:ring-2 focus:ring-teal/20";
 const ETIQUETA =
   "block text-[10px] font-semibold uppercase tracking-[0.12em] text-muted";
 const BOTON_PRIMARIO =
   "inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-teal px-4 text-[12px] font-semibold text-white transition hover:bg-teal-dark";
 const BOTON_SECUNDARIO =
-  "inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-[12px] font-semibold text-navy transition hover:border-teal hover:text-teal";
+  "inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-line bg-surface px-4 text-[12px] font-semibold text-navy transition hover:border-teal hover:text-teal";
 
 type Unidad = {
   id: string;
@@ -71,6 +73,9 @@ export default async function UnidadesPage({
     .eq("id", user!.id)
     .maybeSingle();
 
+  // El residente no administra el inventario del conjunto: solo su unidad.
+  if (perfil?.rol === "residente") redirect("/panel");
+
   const [{ data: unidades }, { data: torres }] = await Promise.all([
     supabase
       .from("unidades")
@@ -89,7 +94,7 @@ export default async function UnidadesPage({
   return (
     <>
       <div className="mb-6">
-        <p className="text-[11px] text-[#90a1ac]">
+        <p className="text-[11px] text-muted">
           MiConjunto <span className="mx-1 opacity-50">/</span>
           <span className="font-semibold text-teal">Unidades</span>
         </p>
@@ -314,7 +319,7 @@ export default async function UnidadesPage({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-line-soft bg-[#fbfcfd] text-[10px] uppercase tracking-[0.1em] text-[#8a9ba7]">
+                <tr className="border-b border-line-soft bg-canvas/60 text-[10px] uppercase tracking-[0.1em] text-muted">
                   <th className="px-5 py-2.5 font-semibold">Unidad</th>
                   <th className="px-5 py-2.5 font-semibold">Torre</th>
                   <th className="px-5 py-2.5 font-semibold">Tipo</th>
@@ -332,10 +337,10 @@ export default async function UnidadesPage({
                     <td className="px-5 py-2.5 text-[12px] font-semibold text-navy">
                       {u.identificador}
                     </td>
-                    <td className="px-5 py-2.5 text-[12px] text-[#3e5563]">
+                    <td className="px-5 py-2.5 text-[12px] text-ink">
                       {u.torres?.nombre ?? "—"}
                     </td>
-                    <td className="px-5 py-2.5 text-[12px] capitalize text-[#3e5563]">
+                    <td className="px-5 py-2.5 text-[12px] capitalize text-ink">
                       {u.tipo}
                     </td>
                     <td className="px-5 py-2.5 text-right text-[12px] tabular-nums text-muted">
