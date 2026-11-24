@@ -7,8 +7,15 @@ Proyecto: `tebgroavefybadveomsr` (`https://tebgroavefybadveomsr.supabase.co`).
 ```
 supabase/
   migrations/
-    0001_nucleo.sql   conjuntos, torres, unidades, personas,
-                      vinculaciones, vehículos, mascotas, perfiles
+    0001_nucleo.sql            conjuntos, torres, unidades, personas,
+                               vinculaciones, vehículos, mascotas, perfiles
+    0003_admin_soporte.sql     rol Admin de plataforma y accesos de soporte
+    0004_auditoria_soporte.sql lectura del Admin por parte de la Administración
+    0005_porteria.sql          visitas, paquetes, novedades y bitácora del turno
+  scripts/
+    0002_primer_conjunto.sql   conjunto de ejemplo y primer usuario
+    asignar_roles.sql          asignación de roles por correo
+    verificar_usuarios.sql     consulta de cuentas y roles
   README.md
 ```
 
@@ -37,6 +44,18 @@ No hace falta reiniciar nada: PostgREST recarga el esquema solo.
 | `vehiculos`, `mascotas` | Bienes asociados a una unidad. |
 | `perfiles` | Cuenta de `auth.users` con rol, conjunto y unidad. |
 
+## Qué crea la migración 0005 (portería)
+
+| Tabla | Para qué |
+|---|---|
+| `visitas` | Visitantes peatonales y vehiculares, con autorización, entrada y salida. |
+| `paquetes` | Recepción, tiempo de espera y entrega a un responsable. |
+| `novedades` | Reportes del turno con categoría, prioridad y cierre. |
+
+Agrega además la vista `movimientos_turno` (bitácora unificada) y las funciones
+`autorizar_visita()` y `cancelar_visita()` para el residente. El detalle está en
+[`docs/diseno/Porteria_Datos_v1.md`](../docs/diseno/Porteria_Datos_v1.md).
+
 ## Seguridad (RLS)
 
 Todas las tablas tienen *Row Level Security* activado. Las reglas se apoyan en
@@ -57,6 +76,9 @@ Resumen de accesos:
 | `personas`, `vinculaciones` | Todo | Todo | Solo las de su unidad |
 | `vehiculos`, `mascotas` | Todo | Todo | Solo los de su unidad |
 | `perfiles` | Todo su conjunto | Solo el suyo | Solo el suyo |
+| `visitas` | Lee y edita | Lee, registra e ingresa | Las de su unidad; autoriza y cancela |
+| `paquetes` | Lee y edita | Lee, recibe y entrega | Los de su unidad, en lectura |
+| `novedades` | Lee, reporta y cierra | Lee, reporta y cierra | No las ve |
 
 Ningún rol `anon` ve datos: el acceso requiere sesión iniciada.
 
