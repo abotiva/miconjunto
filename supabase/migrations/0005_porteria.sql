@@ -68,6 +68,7 @@ exception when duplicate_object then null; end $$;
 create or replace function public.turno_actual()
 returns public.turno_porteria
 language sql stable
+set search_path = public
 as $$
   with h as (
     select extract(hour from (now() at time zone 'America/Bogota'))::int as hora
@@ -128,6 +129,7 @@ create index if not exists visitas_placa_idx
 create or replace function public.preparar_visita()
 returns trigger
 language plpgsql
+set search_path = public
 as $$
 begin
   if new.estado = 'dentro' then
@@ -164,7 +166,8 @@ create trigger trg_visitas_preparar
 create table if not exists public.paquetes (
   id              uuid primary key default gen_random_uuid(),
   conjunto_id     uuid not null references public.conjuntos(id) on delete cascade,
-  unidad_id       uuid not null references public.unidades(id) on delete cascade,
+  -- restrict: el historial de paquetería no debe borrarse arrastrado por una unidad.
+  unidad_id       uuid not null references public.unidades(id) on delete restrict,
   transportadora  text,
   guia            text,
   descripcion     text,
@@ -194,6 +197,7 @@ create index if not exists paquetes_unidad_idx
 create or replace function public.sellar_paquete()
 returns trigger
 language plpgsql
+set search_path = public
 as $$
 begin
   if tg_op = 'INSERT' then
@@ -248,6 +252,7 @@ create index if not exists novedades_unidad_idx
 create or replace function public.sellar_novedad()
 returns trigger
 language plpgsql
+set search_path = public
 as $$
 begin
   if tg_op = 'INSERT' then
@@ -530,6 +535,11 @@ grant select, insert, update
   to authenticated;
 
 grant select on public.movimientos_turno to authenticated;
+
+-- Supabase concede permisos a `anon` por defecto en objetos nuevos. El RLS ya
+-- les niega las filas, pero se retiran para no depender solo de eso.
+revoke all on public.visitas, public.paquetes, public.novedades, public.movimientos_turno
+  from anon;
 
 commit;
 

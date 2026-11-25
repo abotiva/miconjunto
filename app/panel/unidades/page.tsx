@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { IconoEdificio, IconoMas } from "@/components/icons";
@@ -14,6 +15,8 @@ const TIPOS = [
   ["parqueadero", "Parqueadero"],
   ["deposito", "Depósito"],
 ] as const;
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const ERRORES: Record<string, string> = {
   identificador: "El identificador de la unidad es obligatorio.",
@@ -59,7 +62,14 @@ function Estado({ estado }: { estado: string }) {
 export default async function UnidadesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; ok?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    ok?: string;
+    q?: string;
+    torre?: string;
+    tipo?: string;
+    estado?: string;
+  }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -76,16 +86,38 @@ export default async function UnidadesPage({
   // El residente no administra el inventario del conjunto: solo su unidad.
   if (perfil?.rol === "residente") redirect("/panel");
 
-  const [{ data: unidades }, { data: torres }] = await Promise.all([
-    supabase
-      .from("unidades")
-      .select("id, identificador, tipo, coeficiente, area_m2, estado, torres ( nombre )")
-      .order("identificador"),
+  const q = (params.q ?? "").trim().slice(0, 40);
+  const torreFiltro = UUID.test(params.torre ?? "") ? (params.torre as string) : "";
+  const tipoFiltro = TIPOS.some(([valor]) => valor === params.tipo)
+    ? (params.tipo as string)
+    : "";
+  const estadoFiltro =
+    params.estado === "activo" || params.estado === "inactivo" ? params.estado : "";
+  const hayFiltros = Boolean(q || torreFiltro || tipoFiltro || estadoFiltro);
+
+  let consulta = supabase
+    .from("unidades")
+    .select("id, identificador, tipo, coeficiente, area_m2, estado, torres ( nombre )")
+    .order("identificador");
+
+  if (q) consulta = consulta.ilike("identificador", `%${q}%`);
+  if (torreFiltro) consulta = consulta.eq("torre_id", torreFiltro);
+  if (tipoFiltro) consulta = consulta.eq("tipo", tipoFiltro);
+  if (estadoFiltro) consulta = consulta.eq("estado", estadoFiltro);
+
+  const [{ data: unidades }, { data: torres }, { data: resumen }] = await Promise.all([
+    consulta,
     supabase.from("torres").select("id, nombre").order("nombre"),
+    supabase.from("unidades").select("coeficiente"),
   ]);
 
   const lista = (unidades ?? []) as unknown as Unidad[];
-  const totalCoeficiente = lista.reduce((s, u) => s + Number(u.coeficiente ?? 0), 0);
+  // Los totales son del conjunto completo, no de la búsqueda actual.
+  const totalUnidades = resumen?.length ?? 0;
+  const totalCoeficiente = (resumen ?? []).reduce(
+    (suma, u) => suma + Number(u.coeficiente ?? 0),
+    0,
+  );
   const puedeEditar = perfil?.rol === "administracion";
   const mensajeError = params.error
     ? (ERRORES[params.error] ?? `No se pudo guardar (${params.error}).`)
@@ -105,12 +137,12 @@ export default async function UnidadesPage({
               Unidades
             </h1>
             <p className="mt-1 text-[13px] text-muted">
-              {lista.length === 0
+              {totalUnidades === 0
                 ? "Sin unidades registradas todavía"
-                : `${lista.length} ${
-                    lista.length === 1 ? "unidad registrada" : "unidades registradas"
+                : `${totalUnidades} ${
+                    totalUnidades === 1 ? "unidad registrada" : "unidades registradas"
                   } · coeficiente acumulado `}
-              {lista.length > 0 ? (
+              {totalUnidades > 0 ? (
                 <span className="font-semibold text-ink">
                   {totalCoeficiente.toFixed(4)} %
                 </span>
@@ -295,7 +327,78 @@ export default async function UnidadesPage({
         </div>
       ) : null}
 
-      {lista.length === 0 ? (
+      {totalUnidades > 0 ? (
+        <form
+          method="get"
+          action="/panel/unidades"
+          className="mb-4 grid gap-3 rounded-xl border border-line bg-surface p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]"
+        >
+          <div>
+            <label htmlFor="filtro-q" className={ETIQUETA}>
+              Buscar
+            </label>
+            <input
+              id="filtro-q"
+              name="q"
+              defaultValue={q}
+              maxLength={40}
+              placeholder="Identificador, ej: 302"
+              className={CAMPO}
+            />
+          </div>
+          <div>
+            <label htmlFor="filtro-torre" className={ETIQUETA}>
+              Torre
+            </label>
+            <select id="filtro-torre" name="torre" defaultValue={torreFiltro} className={CAMPO}>
+              <option value="">Todas</option>
+              {(torres ?? []).map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="filtro-tipo" className={ETIQUETA}>
+              Tipo
+            </label>
+            <select id="filtro-tipo" name="tipo" defaultValue={tipoFiltro} className={CAMPO}>
+              <option value="">Todos</option>
+              {TIPOS.map(([valor, etiqueta]) => (
+                <option key={valor} value={valor}>
+                  {etiqueta}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="filtro-estado" className={ETIQUETA}>
+              Estado
+            </label>
+            <select id="filtro-estado" name="estado" defaultValue={estadoFiltro} className={CAMPO}>
+              <option value="">Todos</option>
+              <option value="activo">Activas</option>
+              <option value="inactivo">Inactivas</option>
+            </select>
+          </div>
+          <div className="flex items-end gap-2">
+            <button type="submit" className={`${BOTON_SECUNDARIO} w-auto`}>
+              Filtrar
+            </button>
+            {hayFiltros ? (
+              <Link
+                href="/panel/unidades"
+                className="inline-flex h-10 items-center px-2 text-[12px] font-semibold text-muted hover:text-navy"
+              >
+                Limpiar
+              </Link>
+            ) : null}
+          </div>
+        </form>
+      ) : null}
+
+      {totalUnidades === 0 ? (
         <section className="rounded-xl border border-dashed border-line bg-surface p-8 text-center">
           <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-mint text-teal">
             <IconoEdificio className="h-5 w-5" />
@@ -326,16 +429,31 @@ export default async function UnidadesPage({
                   <th className="px-5 py-2.5 text-right font-semibold">Coeficiente</th>
                   <th className="px-5 py-2.5 text-right font-semibold">Área</th>
                   <th className="px-5 py-2.5 font-semibold">Estado</th>
+                  <th className="px-5 py-2.5 text-right font-semibold">
+                    <span className="sr-only">Acciones</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="leading-snug">
+                {lista.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-5 py-8 text-center text-[12px] text-muted">
+                      Ninguna unidad coincide con los filtros.
+                    </td>
+                  </tr>
+                ) : null}
                 {lista.map((u) => (
                   <tr
                     key={u.id}
                     className="border-b border-line-soft transition last:border-0 hover:bg-canvas/60"
                   >
                     <td className="px-5 py-2.5 text-[12px] font-semibold text-navy">
-                      {u.identificador}
+                      <Link
+                        href={`/panel/unidades/${u.id}`}
+                        className="underline-offset-2 hover:text-teal hover:underline"
+                      >
+                        {u.identificador}
+                      </Link>
                     </td>
                     <td className="px-5 py-2.5 text-[12px] text-ink">
                       {u.torres?.nombre ?? "—"}
@@ -352,6 +470,14 @@ export default async function UnidadesPage({
                     <td className="px-5 py-2.5">
                       <Estado estado={u.estado} />
                     </td>
+                    <td className="px-5 py-2.5 text-right">
+                      <Link
+                        href={`/panel/unidades/${u.id}`}
+                        className="text-[11px] font-semibold text-teal hover:underline"
+                      >
+                        {puedeEditar ? "Editar" : "Ver ficha"}
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -360,7 +486,9 @@ export default async function UnidadesPage({
 
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line-soft px-5 py-2.5 text-[11px] text-muted">
             <span>
-              {lista.length} {lista.length === 1 ? "unidad" : "unidades"}
+              {hayFiltros
+                ? `Mostrando ${lista.length} de ${totalUnidades}`
+                : `${lista.length} ${lista.length === 1 ? "unidad" : "unidades"}`}
             </span>
             <span>
               Coeficiente acumulado{" "}
